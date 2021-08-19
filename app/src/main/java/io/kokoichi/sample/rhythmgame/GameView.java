@@ -4,10 +4,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
 import java.util.Random;
+
+import static java.lang.Math.min;
 
 public class GameView extends SurfaceView implements Runnable {
 
@@ -29,8 +32,9 @@ public class GameView extends SurfaceView implements Runnable {
     private Position[] positions;
 
     private class Position {
-        int x,y;
+        int x, y;
     }
+
     public GameView(GameActivity activity, int screenX, int screenY) {
         super(activity);
 
@@ -83,12 +87,12 @@ public class GameView extends SurfaceView implements Runnable {
     @Override
     public void run() {
 
-        while(isPlaying) {
+        while (isPlaying) {
             update();
             draw();
             sleep();
             // ランダムにノーツを落とす
-            if (random.nextFloat() < 0.1) {
+            if (random.nextFloat() < 0.01) {
                 newNotes(random.nextInt(NOTES_NUM) + 1);
             }
         }
@@ -158,8 +162,7 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     /**
-     *
-     * @param type  position type (1-NOTES_NUM)
+     * @param type position type (1-NOTES_NUM)
      */
     public void newNotes(int type) {
 
@@ -168,8 +171,43 @@ public class GameView extends SurfaceView implements Runnable {
         Notes notes = new Notes(getResources());
         notes.x = positions[index].x;
         notes.y = 0;
-        notes.yLimit = positions[index].y;
+        notes.yLimit = positions[index].y + notes.OFFSET;   // a little bit overshoot
         notesList.add(notes);
 
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        float touchedX = event.getX();
+        float touchedY = event.getY();
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_UP:
+
+                double mini = 9999999;
+                for (Notes notes : notesList) {
+
+                    double dist = Math.pow(notes.x + notes.length/2 - touchedX, 2)
+                            + Math.pow(notes.y + notes.length/2 - touchedY, 2);
+                    if (dist < 1000) {
+                        Log.d("hoge", "PERFECT");
+                    } else if ( dist < 1500) {
+                        Log.d("hoge", "GOOD");
+                    } else if (dist < 2000) {
+                        Log.d("hoge", "OK");
+                    }
+                    mini = min(mini, dist);
+                }
+                Log.d("hoge", String.valueOf(mini));
+                break;
+        }
+
+        return true;
+    }
+
+    private boolean isCirclesTouched(int touchedX, int touchedY) {
+
+        return true;
     }
 }

@@ -9,10 +9,10 @@ import static io.kokoichi.sample.rhythmgame.GameView.screenRatioX;
 public class Notes {
 
     Bitmap notes;
-    int x, y, length;
+    int x, y, length, yLimit;
     int lifeTimeMilliSec = 1000;
     int age = 0;
-    int yLimit = 1000;
+    int OFFSET = 80;
 
     Notes (Resources res) {
 
