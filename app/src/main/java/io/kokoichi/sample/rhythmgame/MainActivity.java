@@ -12,6 +12,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        startActivity(new Intent(MainActivity.this, GameActivity.class ));
+        findViewById(R.id.play).setOnClickListener((view) -> {
+            startActivity(new Intent(MainActivity.this, GameActivity.class ));
+        });
     }
 }

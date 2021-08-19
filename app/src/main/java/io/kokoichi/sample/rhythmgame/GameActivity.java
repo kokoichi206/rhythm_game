@@ -1,9 +1,9 @@
 package io.kokoichi.sample.rhythmgame;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.graphics.Point;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -19,5 +19,17 @@ public class GameActivity extends AppCompatActivity {
         gameView = new GameView(this, point.x, point.y);
 
         setContentView(gameView);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        gameView.pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        gameView.resume();
     }
 }
