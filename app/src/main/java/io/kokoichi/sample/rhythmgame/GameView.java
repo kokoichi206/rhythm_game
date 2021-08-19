@@ -46,7 +46,7 @@ public class GameView extends SurfaceView implements Runnable {
             Circle circle = new Circle(getResources());
             // FIXME: remove magic number
             circle.x = screenX / 2 + (int) ((i - 2) * screenRatioX * 300);
-            circle.y = screenY - (int) (screenRatioX * (300 + 12 * Math.pow(Math.abs(i - 2), 3)));
+            circle.y = screenY - (int) (screenRatioY * (300 + 12 * Math.pow(Math.abs(i - 2), 3)));
             circles[i] = circle;
 
         }
@@ -77,6 +77,20 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void update() {
+        // move notes
+        ArrayList<Notes> trashNotes = new ArrayList<>();
+        for (Notes notes : notesList) {
+            notes.age += SLEEP_TIME;
+            notes.y += notes.yLimit * SLEEP_TIME / notes.lifeTimeMilliSec;
+
+            if (notes.age > notes.lifeTimeMilliSec) {
+                trashNotes.add(notes);
+            }
+        }
+        for (Notes notes : trashNotes) {
+            notesList.remove(notes);
+        }
+
         return;
     }
 
@@ -121,7 +135,7 @@ public class GameView extends SurfaceView implements Runnable {
 
         Notes notes = new Notes(getResources());
         notes.x = 200;
-        notes.y = 300;
+        notes.y = 0;
         notesList.add(notes);
 
     }
