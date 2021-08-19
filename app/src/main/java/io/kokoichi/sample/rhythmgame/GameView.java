@@ -22,7 +22,11 @@ public class GameView extends SurfaceView implements Runnable {
     private Background background;
     private Circle[] circles;
     private ArrayList<Notes> notesList;
+    private Position[] positions;
 
+    private class Position {
+        int x,y;
+    }
     public GameView(GameActivity activity, int screenX, int screenY) {
         super(activity);
 
@@ -35,18 +39,32 @@ public class GameView extends SurfaceView implements Runnable {
         screenRatioX = 1920f / screenX;
         screenRatioY = 1080f / screenY;
 
+        // Calculate notes position settings
+        int NOTES_NUM = 5;
+        positions = new Position[NOTES_NUM];
+        for (int i = 0; i < NOTES_NUM; i++) {
+
+            Position position = new Position();
+            // FIXME: remove magic number
+            position.x = screenX / 2 + (int) ((i - 2) * screenRatioX * 300);
+            position.y = screenY - (int) (screenRatioY * (300 + 12 * Math.pow(Math.abs(i - 2), 3)));
+            positions[i] = position;
+
+        }
+
         // Background init
         background = new Background(screenX, screenY, getResources());
 
         // Circle init
-        circles = new Circle[5];
+        circles = new Circle[NOTES_NUM];
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < NOTES_NUM; i++) {
 
             Circle circle = new Circle(getResources());
             // FIXME: remove magic number
-            circle.x = screenX / 2 + (int) ((i - 2) * screenRatioX * 300);
-            circle.y = screenY - (int) (screenRatioY * (300 + 12 * Math.pow(Math.abs(i - 2), 3)));
+            float center = NOTES_NUM / 2;
+            circle.x = positions[i].x;
+            circle.y = positions[i].y;
             circles[i] = circle;
 
         }
