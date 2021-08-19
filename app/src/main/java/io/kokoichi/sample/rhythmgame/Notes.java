@@ -10,7 +10,9 @@ public class Notes {
 
     Bitmap notes;
     int x, y, length;
-    int lifeTimeMilliSec = 3000;
+    int lifeTimeMilliSec = 1000;
+    int age = 0;
+    int yLimit = 1000;
 
     Notes (Resources res) {
 
@@ -24,6 +26,7 @@ public class Notes {
 
         notes = Bitmap.createScaledBitmap(notes, length, length, false);
 
+        yLimit -= length;
     }
 
 }

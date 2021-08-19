@@ -7,10 +7,12 @@ import android.util.Log;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameView extends SurfaceView implements Runnable {
 
     private static final int SLEEP_TIME = Math.round(1000 / 60);
+    private int NOTES_NUM = 5;  // type 1-NOTES_NUM
 
     public static float screenRatioX, screenRatioY;
 
@@ -19,10 +21,16 @@ public class GameView extends SurfaceView implements Runnable {
     private Paint paint;
     private int screenX, screenY;
     private GameActivity activity;
+    private Random random;
+
     private Background background;
     private Circle[] circles;
     private ArrayList<Notes> notesList;
+    private Position[] positions;
 
+    private class Position {
+        int x,y;
+    }
     public GameView(GameActivity activity, int screenX, int screenY) {
         super(activity);
 
@@ -35,27 +43,41 @@ public class GameView extends SurfaceView implements Runnable {
         screenRatioX = 1920f / screenX;
         screenRatioY = 1080f / screenY;
 
+        // Calculate notes position settings
+        positions = new Position[NOTES_NUM];
+        for (int i = 0; i < NOTES_NUM; i++) {
+
+            Position position = new Position();
+            // FIXME: remove magic number
+            position.x = screenX / 2 + (int) ((i - 2) * screenRatioX * 300);
+            position.y = screenY - (int) (screenRatioY * (300 + 12 * Math.pow(Math.abs(i - 2), 3)));
+            positions[i] = position;
+
+        }
+
         // Background init
         background = new Background(screenX, screenY, getResources());
 
         // Circle init
-        circles = new Circle[5];
+        circles = new Circle[NOTES_NUM];
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < NOTES_NUM; i++) {
 
             Circle circle = new Circle(getResources());
             // FIXME: remove magic number
-            circle.x = screenX / 2 + (int) ((i - 2) * screenRatioX * 300);
-            circle.y = screenY - (int) (screenRatioX * (300 + 12 * Math.pow(Math.abs(i - 2), 3)));
+            float center = NOTES_NUM / 2;
+            circle.x = positions[i].x;
+            circle.y = positions[i].y;
             circles[i] = circle;
 
         }
 
         // Notes init
         notesList = new ArrayList<>();
-        newNotes();
 
         paint = new Paint();
+
+        random = new Random();
     }
 
     @Override
@@ -65,6 +87,10 @@ public class GameView extends SurfaceView implements Runnable {
             update();
             draw();
             sleep();
+            // ランダムにノーツを落とす
+            if (random.nextFloat() < 0.1) {
+                newNotes(random.nextInt(NOTES_NUM) + 1);
+            }
         }
     }
 
@@ -77,6 +103,20 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void update() {
+        // move notes
+        ArrayList<Notes> trashNotes = new ArrayList<>();
+        for (Notes notes : notesList) {
+            notes.age += SLEEP_TIME;
+            notes.y += notes.yLimit * SLEEP_TIME / notes.lifeTimeMilliSec;
+
+            if (notes.age > notes.lifeTimeMilliSec) {
+                trashNotes.add(notes);
+            }
+        }
+        for (Notes notes : trashNotes) {
+            notesList.remove(notes);
+        }
+
         return;
     }
 
@@ -117,11 +157,18 @@ public class GameView extends SurfaceView implements Runnable {
         }
     }
 
-    public void newNotes() {
+    /**
+     *
+     * @param type  position type (1-NOTES_NUM)
+     */
+    public void newNotes(int type) {
+
+        int index = type - 1;
 
         Notes notes = new Notes(getResources());
-        notes.x = 200;
-        notes.y = 300;
+        notes.x = positions[index].x;
+        notes.y = 0;
+        notes.yLimit = positions[index].y;
         notesList.add(notes);
 
     }
