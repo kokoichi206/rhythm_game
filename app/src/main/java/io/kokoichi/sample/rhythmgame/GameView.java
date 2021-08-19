@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
+
 public class GameView extends SurfaceView implements Runnable {
 
     private static final int SLEEP_TIME = Math.round(1000 / 60);
@@ -19,6 +21,7 @@ public class GameView extends SurfaceView implements Runnable {
     private GameActivity activity;
     private Background background;
     private Circle[] circles;
+    private ArrayList<Notes> notesList;
 
     public GameView(GameActivity activity, int screenX, int screenY) {
         super(activity);
@@ -47,6 +50,10 @@ public class GameView extends SurfaceView implements Runnable {
             circles[i] = circle;
 
         }
+
+        // Notes init
+        notesList = new ArrayList<>();
+        newNotes();
 
         paint = new Paint();
     }
@@ -86,6 +93,11 @@ public class GameView extends SurfaceView implements Runnable {
             canvas.drawBitmap(circle.circle, circle.x, circle.y, paint);
         }
 
+        // draw Notes
+        for (Notes notes : notesList) {
+            canvas.drawBitmap(notes.notes, notes.x, notes.y, paint);
+        }
+
         getHolder().unlockCanvasAndPost(canvas);
         return;
     }
@@ -103,5 +115,14 @@ public class GameView extends SurfaceView implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void newNotes() {
+
+        Notes notes = new Notes(getResources());
+        notes.x = 200;
+        notes.y = 300;
+        notesList.add(notes);
+
     }
 }
