@@ -18,6 +18,7 @@ public class GameView extends SurfaceView implements Runnable {
     private int screenX, screenY;
     private GameActivity activity;
     private Background background;
+    private Circle[] circles;
 
     public GameView(GameActivity activity, int screenX, int screenY) {
         super(activity);
@@ -31,7 +32,21 @@ public class GameView extends SurfaceView implements Runnable {
         screenRatioX = 1920f / screenX;
         screenRatioY = 1080f / screenY;
 
+        // Background init
         background = new Background(screenX, screenY, getResources());
+
+        // Circle init
+        circles = new Circle[5];
+
+        for (int i = 0; i < 5; i++) {
+
+            Circle circle = new Circle(getResources());
+            // FIXME: remove magic number
+            circle.x = screenX / 2 + (int) ((i - 2) * screenRatioX * 300);
+            circle.y = screenY - (int) (screenRatioX * (300 + 12 * Math.pow(Math.abs(i - 2), 3)));
+            circles[i] = circle;
+
+        }
 
         paint = new Paint();
     }
@@ -65,6 +80,11 @@ public class GameView extends SurfaceView implements Runnable {
             return;
         }
         canvas.drawBitmap(background.background, background.x, background.y, paint);
+
+        // draw Birds
+        for (Circle circle : circles) {
+            canvas.drawBitmap(circle.circle, circle.x, circle.y, paint);
+        }
 
         getHolder().unlockCanvasAndPost(canvas);
         return;
