@@ -182,6 +182,9 @@ public class GameView extends SurfaceView implements Runnable {
         float touchedX = event.getX();
         float touchedY = event.getY();
 
+        if (!isCircleTouched(touchedX, touchedY)) {
+            return true;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
 
@@ -199,15 +202,23 @@ public class GameView extends SurfaceView implements Runnable {
                     }
                     mini = min(mini, dist);
                 }
-                Log.d("hoge", String.valueOf(mini));
                 break;
         }
 
         return true;
     }
 
-    private boolean isCirclesTouched(int touchedX, int touchedY) {
+    private boolean isCircleTouched(float touchedX, float touchedY) {
 
-        return true;
+        boolean isOnCircles = false;
+
+        for (Circle circle : circles) {
+            if (((touchedX > circle.x) && (touchedX < circle.x + circle.length)) &&
+                    ((touchedY > circle.y) && (touchedY < circle.y + circle.length))) {
+                isOnCircles = true;
+            }
+        }
+
+        return isOnCircles;
     }
 }
