@@ -10,7 +10,7 @@ public class Notes {
 
     Bitmap notes;
     int x, y, length;
-    int lifeTimeMilliSec = 2000;
+    int lifeTimeMilliSec = 1000;
     int age = 0;
     int yLimit = 1000;
 

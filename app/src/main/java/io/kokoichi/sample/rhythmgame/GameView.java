@@ -7,10 +7,12 @@ import android.util.Log;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameView extends SurfaceView implements Runnable {
 
     private static final int SLEEP_TIME = Math.round(1000 / 60);
+    private int NOTES_NUM = 5;  // type 1-NOTES_NUM
 
     public static float screenRatioX, screenRatioY;
 
@@ -19,6 +21,8 @@ public class GameView extends SurfaceView implements Runnable {
     private Paint paint;
     private int screenX, screenY;
     private GameActivity activity;
+    private Random random;
+
     private Background background;
     private Circle[] circles;
     private ArrayList<Notes> notesList;
@@ -40,7 +44,6 @@ public class GameView extends SurfaceView implements Runnable {
         screenRatioY = 1080f / screenY;
 
         // Calculate notes position settings
-        int NOTES_NUM = 5;
         positions = new Position[NOTES_NUM];
         for (int i = 0; i < NOTES_NUM; i++) {
 
@@ -71,9 +74,10 @@ public class GameView extends SurfaceView implements Runnable {
 
         // Notes init
         notesList = new ArrayList<>();
-        newNotes();
 
         paint = new Paint();
+
+        random = new Random();
     }
 
     @Override
@@ -83,6 +87,10 @@ public class GameView extends SurfaceView implements Runnable {
             update();
             draw();
             sleep();
+            // ランダムにノーツを落とす
+            if (random.nextFloat() < 0.1) {
+                newNotes(random.nextInt(NOTES_NUM) + 1);
+            }
         }
     }
 
@@ -149,11 +157,18 @@ public class GameView extends SurfaceView implements Runnable {
         }
     }
 
-    public void newNotes() {
+    /**
+     *
+     * @param type  position type (1-NOTES_NUM)
+     */
+    public void newNotes(int type) {
+
+        int index = type - 1;
 
         Notes notes = new Notes(getResources());
-        notes.x = 200;
+        notes.x = positions[index].x;
         notes.y = 0;
+        notes.yLimit = positions[index].y;
         notesList.add(notes);
 
     }
