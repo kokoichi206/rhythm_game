@@ -10,6 +10,8 @@ public class GameView extends SurfaceView implements Runnable {
 
     private static final int SLEEP_TIME = Math.round(1000 / 60);
 
+    public static float screenRatioX, screenRatioY;
+
     private Thread thread;
     private boolean isPlaying;
     private Paint paint;
@@ -24,6 +26,10 @@ public class GameView extends SurfaceView implements Runnable {
 
         this.screenX = screenX;
         this.screenY = screenY;
+
+        // FIXME
+        screenRatioX = 1920f / screenX;
+        screenRatioY = 1080f / screenY;
 
         background = new Background(screenX, screenY, getResources());
 
