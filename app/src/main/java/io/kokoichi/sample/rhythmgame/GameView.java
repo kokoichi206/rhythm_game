@@ -181,26 +181,35 @@ public class GameView extends SurfaceView implements Runnable {
         float touchedX = event.getX();
         float touchedY = event.getY();
 
+        // return if touched point is out of circle area
         if (!isCircleTouched(touchedX, touchedY)) {
             return true;
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
 
-                double mini = 9999999;
+                Notes touchedNotes = null;
+
                 for (Notes notes : notesList) {
 
                     double dist = Math.pow(notes.x + notes.length / 2 - touchedX, 2)
                             + Math.pow(notes.y + notes.length / 2 - touchedY, 2);
                     if (dist < 1000) {
                         Log.d("hoge", "PERFECT");
+                        touchedNotes = notes;
                     } else if (dist < 1500) {
                         Log.d("hoge", "GOOD");
+                        touchedNotes = notes;
                     } else if (dist < 2000) {
                         Log.d("hoge", "OK");
+                        touchedNotes = notes;
                     }
-                    mini = min(mini, dist);
                 }
+
+                if (touchedNotes != null) {
+                    notesList.remove(touchedNotes);
+                }
+
                 break;
         }
 
