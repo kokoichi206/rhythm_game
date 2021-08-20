@@ -9,8 +9,6 @@ import android.view.SurfaceView;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static java.lang.Math.min;
-
 public class GameView extends SurfaceView implements Runnable {
 
     private static final int SLEEP_TIME = Math.round(1000 / 60);
@@ -92,6 +90,7 @@ public class GameView extends SurfaceView implements Runnable {
     public void run() {
 
         myPlayer.player.start();
+        myPlayer.player.setOnCompletionListener(myPlayer);
 
         while (isPlaying) {
             update();
