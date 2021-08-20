@@ -11,7 +11,7 @@ public class Circle {
     Bitmap circle;
     int x, y, length;
 
-    Circle (Resources res) {
+    Circle(Resources res) {
 
         circle = BitmapFactory.decodeResource(res, R.drawable.circle);
 

@@ -1,13 +1,15 @@
 package io.kokoichi.sample.rhythmgame;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
 import java.util.Random;
+
+import static java.lang.Math.min;
 
 public class GameView extends SurfaceView implements Runnable {
 
@@ -29,8 +31,9 @@ public class GameView extends SurfaceView implements Runnable {
     private Position[] positions;
 
     private class Position {
-        int x,y;
+        int x, y;
     }
+
     public GameView(GameActivity activity, int screenX, int screenY) {
         super(activity);
 
@@ -83,12 +86,12 @@ public class GameView extends SurfaceView implements Runnable {
     @Override
     public void run() {
 
-        while(isPlaying) {
+        while (isPlaying) {
             update();
             draw();
             sleep();
             // ランダムにノーツを落とす
-            if (random.nextFloat() < 0.1) {
+            if (random.nextFloat() < 0.01) {
                 newNotes(random.nextInt(NOTES_NUM) + 1);
             }
         }
@@ -158,8 +161,7 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     /**
-     *
-     * @param type  position type (1-NOTES_NUM)
+     * @param type position type (1-NOTES_NUM)
      */
     public void newNotes(int type) {
 
@@ -168,8 +170,63 @@ public class GameView extends SurfaceView implements Runnable {
         Notes notes = new Notes(getResources());
         notes.x = positions[index].x;
         notes.y = 0;
-        notes.yLimit = positions[index].y;
+        notes.yLimit = positions[index].y + notes.OFFSET;   // a little bit overshoot
         notesList.add(notes);
 
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        float touchedX = event.getX();
+        float touchedY = event.getY();
+
+        // return if touched point is out of circle area
+        if (!isCircleTouched(touchedX, touchedY)) {
+            return true;
+        }
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_UP:
+
+                Notes touchedNotes = null;
+
+                for (Notes notes : notesList) {
+
+                    double dist = Math.pow(notes.x + notes.length / 2 - touchedX, 2)
+                            + Math.pow(notes.y + notes.length / 2 - touchedY, 2);
+                    if (dist < 1000) {
+                        Log.d("hoge", "PERFECT");
+                        touchedNotes = notes;
+                    } else if (dist < 1500) {
+                        Log.d("hoge", "GOOD");
+                        touchedNotes = notes;
+                    } else if (dist < 2000) {
+                        Log.d("hoge", "OK");
+                        touchedNotes = notes;
+                    }
+                }
+
+                if (touchedNotes != null) {
+                    notesList.remove(touchedNotes);
+                }
+
+                break;
+        }
+
+        return true;
+    }
+
+    private boolean isCircleTouched(float touchedX, float touchedY) {
+
+        boolean isOnCircles = false;
+
+        for (Circle circle : circles) {
+            if (((touchedX > circle.x) && (touchedX < circle.x + circle.length)) &&
+                    ((touchedY > circle.y) && (touchedY < circle.y + circle.length))) {
+                isOnCircles = true;
+            }
+        }
+
+        return isOnCircles;
     }
 }
