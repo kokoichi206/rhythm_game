@@ -9,8 +9,6 @@ import android.view.SurfaceView;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static java.lang.Math.min;
-
 public class GameView extends SurfaceView implements Runnable {
 
     private static final int SLEEP_TIME = Math.round(1000 / 60);
@@ -29,6 +27,8 @@ public class GameView extends SurfaceView implements Runnable {
     private Circle[] circles;
     private ArrayList<Notes> notesList;
     private Position[] positions;
+
+    private MyMediaPlayer myPlayer;
 
     private class Position {
         int x, y;
@@ -81,10 +81,16 @@ public class GameView extends SurfaceView implements Runnable {
         paint = new Paint();
 
         random = new Random();
+
+        // Sound init
+        myPlayer = new MyMediaPlayer(activity, R.raw.test_sound);
     }
 
     @Override
     public void run() {
+
+        myPlayer.player.start();
+        myPlayer.player.setOnCompletionListener(myPlayer);
 
         while (isPlaying) {
             update();
