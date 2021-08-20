@@ -13,6 +13,7 @@ import java.io.IOException;
 import static androidx.core.content.ContextCompat.startActivity;
 
 public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
+    String TAG = MyMediaPlayer.class.getSimpleName();
 
     MediaPlayer player = null;
     Activity activity;
@@ -20,15 +21,14 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
     public MyMediaPlayer(Activity activity, int musicResId) {
 
         player = MediaPlayer.create(activity.getApplicationContext(), R.raw.test_sound);
-        Log.d("hoge", "try-catch start");
 
         try {
             player.prepare();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d("hoge", "IOException error");
+            Log.d(TAG, "IOException error");
         } catch (Exception e) {
-            Log.d("hoge", String.valueOf(e));
+            Log.d(TAG, String.valueOf(e));
         }
     }
 
@@ -36,7 +36,7 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
     public void onCompletion(MediaPlayer arg0) {
         // TODO:
         // Tell view Activity to return to home Activity
-        Log.d("hoge", "Completion of the media");
+        Log.d(TAG, "Completion of the media");
 
         Intent intent = new Intent(activity, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
