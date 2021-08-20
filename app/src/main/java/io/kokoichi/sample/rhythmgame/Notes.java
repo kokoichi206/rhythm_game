@@ -14,7 +14,7 @@ public class Notes {
     int age = 0;
     int OFFSET = 80;
 
-    Notes (Resources res) {
+    Notes(Resources res) {
 
         notes = BitmapFactory.decodeResource(res, R.drawable.notes);
 

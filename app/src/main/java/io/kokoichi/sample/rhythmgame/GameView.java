@@ -1,7 +1,6 @@
 package io.kokoichi.sample.rhythmgame;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -191,11 +190,11 @@ public class GameView extends SurfaceView implements Runnable {
                 double mini = 9999999;
                 for (Notes notes : notesList) {
 
-                    double dist = Math.pow(notes.x + notes.length/2 - touchedX, 2)
-                            + Math.pow(notes.y + notes.length/2 - touchedY, 2);
+                    double dist = Math.pow(notes.x + notes.length / 2 - touchedX, 2)
+                            + Math.pow(notes.y + notes.length / 2 - touchedY, 2);
                     if (dist < 1000) {
                         Log.d("hoge", "PERFECT");
-                    } else if ( dist < 1500) {
+                    } else if (dist < 1500) {
                         Log.d("hoge", "GOOD");
                     } else if (dist < 2000) {
                         Log.d("hoge", "OK");
