@@ -30,6 +30,8 @@ public class GameView extends SurfaceView implements Runnable {
     private ArrayList<Notes> notesList;
     private Position[] positions;
 
+    private MyMediaPlayer myPlayer;
+
     private class Position {
         int x, y;
     }
@@ -81,10 +83,15 @@ public class GameView extends SurfaceView implements Runnable {
         paint = new Paint();
 
         random = new Random();
+
+        // Sound init
+        myPlayer = new MyMediaPlayer(activity, R.raw.test_sound);
     }
 
     @Override
     public void run() {
+
+        myPlayer.player.start();
 
         while (isPlaying) {
             update();
