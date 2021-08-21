@@ -224,12 +224,12 @@ public class GameView extends SurfaceView implements Runnable {
 
         // draw combo if combo > 0
         if (combo > 0) {
-            canvas.drawText(combo + "", screenX / 2f, 164, paint);
+            drawTextCenter(canvas, combo + "", screenX / 2f, 164, paint);
         }
 
         // draw info if message exists
         if (info.age > 0) {
-            canvas.drawText(info.message + "", screenX / 2f - 90, 328, sPaint);
+            drawTextCenter(canvas, info.message + "", screenX / 2f, 328, sPaint);
         }
 
         getHolder().unlockCanvasAndPost(canvas);
@@ -298,11 +298,11 @@ public class GameView extends SurfaceView implements Runnable {
                     } else if (dist < 1500) {
                         Log.d("hoge", "GOOD");
                         touchedNotes = notes;
-                        updateInfo(" GOOD ", JUDGE_INFO_AGE);
+                        updateInfo("GOOD", JUDGE_INFO_AGE);
                     } else if (dist < 3000) {
                         Log.d("hoge", "OK");
                         touchedNotes = notes;
-                        updateInfo("  OK  ", JUDGE_INFO_AGE);
+                        updateInfo("OK", JUDGE_INFO_AGE);
                     }
                 }
 
@@ -316,6 +316,13 @@ public class GameView extends SurfaceView implements Runnable {
         }
 
         return true;
+    }
+
+    private void drawTextCenter(Canvas canvas, String text, float x, float y, Paint paint) {
+        float width = paint.measureText(text);
+        float startX = x - width / 2;
+        float startY = y - (paint.getFontMetrics().descent + paint.getFontMetrics().ascent) / 2;
+        canvas.drawText(text, startX, startY, paint);
     }
 
     private void updateInfo(String msg, int age) {
