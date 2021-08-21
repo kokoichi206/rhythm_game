@@ -125,8 +125,8 @@ public class GameView extends SurfaceView implements Runnable {
         // set the params for count the timing
         long startedAt = System.currentTimeMillis();
         Log.d(TAG, "loop started at " + startedAt);
-        int notesIntex = 0;
-        double nextNotesTiming = dropTiming[notesIntex];
+        int notesIndex = 0;
+        double nextNotesTiming = dropTiming[notesIndex];
 
         while (isPlaying) {
 
@@ -145,8 +145,8 @@ public class GameView extends SurfaceView implements Runnable {
                     newNotes(1);
                 }
 
-                notesIntex += 1;
-                nextNotesTiming = dropTiming[notesIntex];
+                notesIndex += 1;
+                nextNotesTiming = dropTiming[notesIndex];
             }
         }
     }
@@ -241,27 +241,19 @@ public class GameView extends SurfaceView implements Runnable {
         // return if touched point is out of circle area
         int index = getCircleIndex(touchedX, touchedY);
         if (index == -1) {
-            Log.d("hoge", "OUT OF RANGE");
+            Log.d(TAG, "touched point is OUT of the Circles");
             return true;
         }
         // adjust touched point to the center of the circle
         touchedX = circles[index].x + circles[index].length / 2;
         touchedY = circles[index].y + circles[index].length / 2;
 
-        Log.d("hoge", "----------");
-        Log.d("hoge", "touched x: " + String.valueOf(touchedX));
-        Log.d("hoge", "touched y: " + String.valueOf(touchedY));
-
-        Log.d("hoge", "notes Num: " + String.valueOf(notesList.size()));
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
 
                 Notes touchedNotes = null;
 
-                Log.d("hoge", "notes Num: " + String.valueOf(notesList.size()));
                 for (Notes notes : notesList) {
-                    Log.d("hoge", "notes x: " + String.valueOf(notes.x + notes.length / 2));
-                    Log.d("hoge", "notes y: " + String.valueOf(notes.y + notes.length / 2));
 
                     double dist = Math.pow(notes.x + notes.length / 2 - touchedX, 2)
                             + Math.pow(notes.y + notes.length / 2 - touchedY, 2);
@@ -290,8 +282,6 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private int getCircleIndex(float touchedX, float touchedY) {
-
-        boolean isOnCircles = false;
 
         int index = -1;
         for (int i = 0; i < NOTES_NUM; i++) {
