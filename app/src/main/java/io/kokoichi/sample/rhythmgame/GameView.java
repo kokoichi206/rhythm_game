@@ -1,6 +1,7 @@
 package io.kokoichi.sample.rhythmgame;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -20,7 +21,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     private Thread thread;
     private boolean isPlaying;
-    private Paint paint;
+    private Paint paint, sPaint;
     private int screenX, screenY;
     private GameActivity activity;
     private Random random;
@@ -36,6 +37,13 @@ public class GameView extends SurfaceView implements Runnable {
     private int num_bar;
 
     private int combo = 0;
+    private Info info;      // information like "GOOD","PERFECT"
+    private static final int JUDGE_INFO_AGE = 15;
+
+    private class Info {
+        int age;            // the unit is loop count
+        String message;        // message like "GOOD","PERFECT"
+    }
 
     private class Position {
         int x, y;
@@ -86,6 +94,17 @@ public class GameView extends SurfaceView implements Runnable {
         notesList = new ArrayList<>();
 
         paint = new Paint();
+        paint.setTextSize(128);
+        paint.setColor(Color.BLACK);
+
+        // FIXME: There should be better ways
+        sPaint = new Paint();       // for SMALL text
+        sPaint.setTextSize(84);
+        sPaint.setColor(Color.GRAY);
+
+        info = new Info();
+        info.age = 0;
+        info.message = "";
 
         random = new Random();
 
@@ -177,6 +196,11 @@ public class GameView extends SurfaceView implements Runnable {
             combo = 0;
         }
 
+        // info: decrease age
+        if (info.age > 0) {
+            info.age -= 1;
+        }
+
         return;
     }
 
@@ -196,6 +220,16 @@ public class GameView extends SurfaceView implements Runnable {
         // draw Notes
         for (Notes notes : notesList) {
             canvas.drawBitmap(notes.notes, notes.x, notes.y, paint);
+        }
+
+        // draw combo if combo > 0
+        if (combo > 0) {
+            canvas.drawText(combo + "", screenX / 2f, 164, paint);
+        }
+
+        // draw info if message exists
+        if (info.age > 0) {
+            canvas.drawText(info.message + "", screenX / 2f - 90, 328, sPaint);
         }
 
         getHolder().unlockCanvasAndPost(canvas);
@@ -260,12 +294,15 @@ public class GameView extends SurfaceView implements Runnable {
                     if (dist < 1000) {
                         Log.d("hoge", "PERFECT");
                         touchedNotes = notes;
+                        updateInfo("PERFECT", JUDGE_INFO_AGE);
                     } else if (dist < 1500) {
                         Log.d("hoge", "GOOD");
                         touchedNotes = notes;
+                        updateInfo(" GOOD ", JUDGE_INFO_AGE);
                     } else if (dist < 3000) {
                         Log.d("hoge", "OK");
                         touchedNotes = notes;
+                        updateInfo("  OK  ", JUDGE_INFO_AGE);
                     }
                 }
 
@@ -279,6 +316,11 @@ public class GameView extends SurfaceView implements Runnable {
         }
 
         return true;
+    }
+
+    private void updateInfo(String msg, int age) {
+        info.age = age;
+        info.message = msg;
     }
 
     private int getCircleIndex(float touchedX, float touchedY) {
