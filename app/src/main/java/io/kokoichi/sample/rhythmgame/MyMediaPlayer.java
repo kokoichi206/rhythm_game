@@ -37,6 +37,8 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
         // TODO:
         // Tell view Activity to return to home Activity
         Log.d(TAG, "Completion of the media");
+        Log.d(TAG, "loop ended at " + System.currentTimeMillis());
+
 
         Intent intent = new Intent(activity, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
