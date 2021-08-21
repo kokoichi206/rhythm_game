@@ -35,6 +35,8 @@ public class GameView extends SurfaceView implements Runnable {
     private double musicStartingTime, musicEndingTime;
     private int num_bar;
 
+    private int combo = 0;
+
     private class Position {
         int x, y;
     }
@@ -164,12 +166,15 @@ public class GameView extends SurfaceView implements Runnable {
             notes.age += SLEEP_TIME;
             notes.y += notes.yLimit * SLEEP_TIME / notes.lifeTimeMilliSec;
 
-            if (notes.age > notes.lifeTimeMilliSec) {
+            if (notes.age > (notes.lifeTimeMilliSec + notes.OFFSET)) {
                 trashNotes.add(notes);
             }
         }
-        for (Notes notes : trashNotes) {
-            notesList.remove(notes);
+        if (trashNotes.size() > 0) {
+            for (Notes notes : trashNotes) {
+                notesList.remove(notes);
+            }
+            combo = 0;
         }
 
         return;
@@ -234,15 +239,29 @@ public class GameView extends SurfaceView implements Runnable {
         float touchedY = event.getY();
 
         // return if touched point is out of circle area
-        if (!isCircleTouched(touchedX, touchedY)) {
+        int index = getCircleIndex(touchedX, touchedY);
+        if (index == -1) {
+            Log.d("hoge", "OUT OF RANGE");
             return true;
         }
+        // adjust touched point to the center of the circle
+        touchedX = circles[index].x + circles[index].length / 2;
+        touchedY = circles[index].y + circles[index].length / 2;
+
+        Log.d("hoge", "----------");
+        Log.d("hoge", "touched x: " + String.valueOf(touchedX));
+        Log.d("hoge", "touched y: " + String.valueOf(touchedY));
+
+        Log.d("hoge", "notes Num: " + String.valueOf(notesList.size()));
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
 
                 Notes touchedNotes = null;
 
+                Log.d("hoge", "notes Num: " + String.valueOf(notesList.size()));
                 for (Notes notes : notesList) {
+                    Log.d("hoge", "notes x: " + String.valueOf(notes.x + notes.length / 2));
+                    Log.d("hoge", "notes y: " + String.valueOf(notes.y + notes.length / 2));
 
                     double dist = Math.pow(notes.x + notes.length / 2 - touchedX, 2)
                             + Math.pow(notes.y + notes.length / 2 - touchedY, 2);
@@ -252,7 +271,7 @@ public class GameView extends SurfaceView implements Runnable {
                     } else if (dist < 1500) {
                         Log.d("hoge", "GOOD");
                         touchedNotes = notes;
-                    } else if (dist < 2000) {
+                    } else if (dist < 3000) {
                         Log.d("hoge", "OK");
                         touchedNotes = notes;
                     }
@@ -260,6 +279,8 @@ public class GameView extends SurfaceView implements Runnable {
 
                 if (touchedNotes != null) {
                     notesList.remove(touchedNotes);
+                    combo += 1;
+                    Log.d("hoge", "combo is " + combo);
                 }
 
                 break;
@@ -268,17 +289,18 @@ public class GameView extends SurfaceView implements Runnable {
         return true;
     }
 
-    private boolean isCircleTouched(float touchedX, float touchedY) {
+    private int getCircleIndex(float touchedX, float touchedY) {
 
         boolean isOnCircles = false;
 
-        for (Circle circle : circles) {
-            if (((touchedX > circle.x) && (touchedX < circle.x + circle.length)) &&
-                    ((touchedY > circle.y) && (touchedY < circle.y + circle.length))) {
-                isOnCircles = true;
+        int index = -1;
+        for (int i = 0; i < NOTES_NUM; i++) {
+            if (((touchedX > circles[i].x) && (touchedX < circles[i].x + circles[i].length)) &&
+                    ((touchedY > circles[i].y) && (touchedY < circles[i].y + circles[i].length))) {
+                index = i;
             }
         }
 
-        return isOnCircles;
+        return index;
     }
 }

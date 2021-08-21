@@ -12,7 +12,7 @@ public class Notes {
     int x, y, length, yLimit;
     public static int lifeTimeMilliSec = 1000;
     int age = 0;
-    int OFFSET = 80;
+    int OFFSET = 180;
 
     Notes(Resources res) {
 
