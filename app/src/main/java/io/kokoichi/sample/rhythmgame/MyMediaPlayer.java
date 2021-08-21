@@ -20,7 +20,7 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
 
     public MyMediaPlayer(Activity activity, int musicResId) {
 
-        player = MediaPlayer.create(activity.getApplicationContext(), R.raw.test_sound);
+        player = MediaPlayer.create(activity.getApplicationContext(), R.raw.kimigayo);
 
         try {
             player.prepare();
