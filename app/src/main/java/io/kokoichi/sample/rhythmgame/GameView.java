@@ -5,13 +5,13 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import static java.lang.Math.min;
-
 public class GameView extends SurfaceView implements Runnable {
+    String TAG = GameView.class.getSimpleName();
 
     private static final int SLEEP_TIME = Math.round(1000 / 60);
     private int NOTES_NUM = 5;  // type 1-NOTES_NUM
@@ -29,6 +29,11 @@ public class GameView extends SurfaceView implements Runnable {
     private Circle[] circles;
     private ArrayList<Notes> notesList;
     private Position[] positions;
+
+    private MyMediaPlayer myPlayer;
+    private double[] dropTiming;
+    private double musicStartingTime, musicEndingTime;
+    private int num_bar;
 
     private class Position {
         int x, y;
@@ -81,18 +86,65 @@ public class GameView extends SurfaceView implements Runnable {
         paint = new Paint();
 
         random = new Random();
+
+        // Sound init
+        // CHOOSE ONE MUSIC
+        // All time related variables are milliseconds
+        myPlayer = new MyMediaPlayer(activity, R.raw.kimigayo);
+        musicStartingTime = 5.108866213151927 * 1000;
+        musicEndingTime = 45.24492063492064 * 1000;
+        dropTiming = new double[]{0,
+                1, 1, 1, 1, 1, 1, 2,
+                1, 1, 1, 0.5, 0.5, 1, 1, 1, 1,
+                1, 1, 2, 1, 1, 2,
+                1, 1, 1, 1, 1.5, 0.5, 2,
+                1, 1, 2, 1, 1, 1, 1,
+                1, 0.5, 0.5, 2};
+        num_bar = 11 * 4;
+
+        // Time between appearance and the clickable zone
+        int timeToCircle = Notes.lifeTimeMilliSec;
+        dropTiming[0] += musicStartingTime - timeToCircle;
+
+        // Convert one bar of music sheet to milliseconds
+        double one_bar = (musicEndingTime - musicStartingTime) / num_bar;
+        for (int i = 1; i < dropTiming.length; i++) {
+            dropTiming[i] = dropTiming[i - 1] + dropTiming[i] * one_bar;
+        }
+
     }
 
     @Override
     public void run() {
 
+        myPlayer.player.start();
+        myPlayer.player.setOnCompletionListener(myPlayer);
+
+        // set the params for count the timing
+        long startedAt = System.currentTimeMillis();
+        Log.d(TAG, "loop started at " + startedAt);
+        int notesIntex = 0;
+        double nextNotesTiming = dropTiming[notesIntex];
+
         while (isPlaying) {
+
             update();
             draw();
-            sleep();
-            // ランダムにノーツを落とす
-            if (random.nextFloat() < 0.01) {
-                newNotes(random.nextInt(NOTES_NUM) + 1);
+//            sleep();
+
+            // drop the notes when the time comes
+            if (System.currentTimeMillis() - startedAt > nextNotesTiming) {
+
+                // pass the type (NOT index)
+                int notesType = random.nextInt(NOTES_NUM) + 1;
+                if (notesType >= 1 && notesType <= NOTES_NUM) {
+                    newNotes(notesType);
+                } else {
+                    newNotes(1);
+                }
+
+                notesIntex += 1;
+                nextNotesTiming = dropTiming[notesIntex];
             }
         }
     }
