@@ -7,7 +7,7 @@ import android.os.Bundle;
 
 public class GameActivity extends AppCompatActivity {
 
-    //    private GameView gameView;
+//    private GameView gameView;
     public GameView gameView;
 
     @Override
@@ -32,18 +32,5 @@ public class GameActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         gameView.resume();
-    }
-
-    @Override
-    protected void onDestroy() {
-
-        super.onDestroy();
-
-        // Do something before killing this GameActivity
-        if (MyMediaPlayer.player != null) {
-            if (MyMediaPlayer.player.isPlaying()) {
-                MyMediaPlayer.player.release();
-            }
-        }
     }
 }

@@ -33,7 +33,7 @@ public class GameView extends SurfaceView implements Runnable {
     private Position[] positions;
     private Button button;
 
-    public MyMediaPlayer myPlayer;
+    private MyMediaPlayer myPlayer;
     private double[] dropTiming;
     private double musicStartingTime, musicEndingTime;
     private int num_bar;
@@ -382,13 +382,6 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     public void returnHome() {
-        // Do something before checking
-        if (MyMediaPlayer.player != null) {
-            if (MyMediaPlayer.player.isPlaying()) {
-                MyMediaPlayer.player.pause();
-            }
-        }
-
         Intent intent = new Intent(activity, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);

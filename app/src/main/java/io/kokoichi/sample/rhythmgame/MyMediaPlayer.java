@@ -14,10 +14,9 @@ import static android.app.Activity.RESULT_OK;
 import static androidx.core.content.ContextCompat.startActivity;
 
 public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
-
     String TAG = MyMediaPlayer.class.getSimpleName();
 
-    public static MediaPlayer player = null;
+    MediaPlayer player = null;
     Activity activityInMedia;
 
     GameView gameViewInMedia;
