@@ -44,6 +44,10 @@ public class GameView extends SurfaceView implements Runnable {
     private Info info;      // information like "GOOD","PERFECT"
     private static final int JUDGE_INFO_AGE = 15;
 
+    private long loopStartedAt;
+    private int notesIndex;
+    private double nextNotesTiming;
+
     private class Info {
         int age;            // the unit is loop count
         String message;        // message like "GOOD","PERFECT"
@@ -147,11 +151,14 @@ public class GameView extends SurfaceView implements Runnable {
         myPlayer.player.start();
         myPlayer.player.setOnCompletionListener(myPlayer);
 
-        // set the params for count the timing
-        long startedAt = System.currentTimeMillis();
-        Log.d(TAG, "loop started at " + startedAt);
-        int notesIndex = 0;
-        double nextNotesTiming = dropTiming[notesIndex];
+        // set the params for count the timing only when FIRST called
+        if(loopStartedAt == 0) {
+            loopStartedAt = System.currentTimeMillis();
+            notesIndex = 0;
+            nextNotesTiming = dropTiming[notesIndex];
+        }
+
+        Log.d(TAG, "loop started at " + loopStartedAt);
 
         while (isPlaying) {
 
@@ -160,7 +167,7 @@ public class GameView extends SurfaceView implements Runnable {
 //            sleep();
 
             // drop the notes when the time comes
-            if (System.currentTimeMillis() - startedAt > nextNotesTiming) {
+            if (System.currentTimeMillis() - loopStartedAt > nextNotesTiming) {
 
                 // pass the type (NOT index)
                 int notesType = random.nextInt(NOTES_NUM) + 1;
@@ -385,6 +392,9 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     public void returnHome() {
+
+        long dialogStartedAt = System.currentTimeMillis();
+
         // Pause music
         int musicLength = 0;
         if (MyMediaPlayer.player != null) {
@@ -393,6 +403,7 @@ public class GameView extends SurfaceView implements Runnable {
                 musicLength = MyMediaPlayer.player.getCurrentPosition();
             }
         }
+        pause();
 
         //
         // Make a dialog to check whether you really wanna go back home
@@ -411,6 +422,11 @@ public class GameView extends SurfaceView implements Runnable {
                 MyMediaPlayer.player.start();
                 MyMediaPlayer.player.seekTo(finalMusicLength);
 
+                long dialogEndedAt = System.currentTimeMillis();
+
+                // Shift the started time to adjust the dropping start timing.
+                loopStartedAt += dialogEndedAt - dialogStartedAt;
+                resume();
             }
         });
         // NG button = QUIT  // CAUTION
