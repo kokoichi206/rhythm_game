@@ -15,9 +15,7 @@ public class Circle {
 
         circle = BitmapFactory.decodeResource(res, R.drawable.circle);
 
-        length = circle.getWidth();
-
-        length /= 2;
+        length = 240;
 
         length = (int) (length * screenRatioX);
 

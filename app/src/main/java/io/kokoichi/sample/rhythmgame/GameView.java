@@ -282,7 +282,7 @@ public class GameView extends SurfaceView implements Runnable {
 
         Notes notes = new Notes(getResources());
         notes.x = positions[index].x;
-        notes.y = 0;
+        notes.y = 128;
         notes.yLimit = positions[index].y + notes.OFFSET;   // a little bit overshoot
         notesList.add(notes);
 
