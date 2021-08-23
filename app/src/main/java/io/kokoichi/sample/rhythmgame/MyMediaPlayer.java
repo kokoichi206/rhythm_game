@@ -10,6 +10,7 @@ import android.util.Log;
 
 import java.io.IOException;
 
+import static android.app.Activity.RESULT_OK;
 import static androidx.core.content.ContextCompat.startActivity;
 
 public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
@@ -42,11 +43,16 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
         // TODO:
         // Tell view Activity to return to home Activity
 
-        Intent intent = new Intent(activityInMedia, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//        Intent intent = new Intent(activityInMedia, MainActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//        Log.d("hoge", String.valueOf(gameViewInMedia.getMaxCombo()));
+//        intent.putExtra(MainActivity.INTENT_KEY_MAX_COMBO, gameViewInMedia.getMaxCombo());
+//        activityInMedia.startActivity(intent);
+//        activityInMedia.finish();
+        Intent intent = new Intent();
         intent.putExtra(MainActivity.INTENT_KEY_MAX_COMBO, gameViewInMedia.getMaxCombo());
-        activityInMedia.startActivity(intent);
+        activityInMedia.setResult(RESULT_OK, intent);
         activityInMedia.finish();
     }
 }
