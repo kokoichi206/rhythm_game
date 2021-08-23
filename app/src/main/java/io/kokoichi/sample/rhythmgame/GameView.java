@@ -310,11 +310,12 @@ public class GameView extends SurfaceView implements Runnable {
         float touchedX = event.getX();
         float touchedY = event.getY();
 
+        // Check the Stop Button was Tapped
         if (isStopButtonTapped(touchedX, touchedY)) {
             Log.d(TAG, "The stop-button is clicked");
 
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                returnHome();
+                returnHomeCheck();
             }
             return true;
         }
@@ -322,7 +323,6 @@ public class GameView extends SurfaceView implements Runnable {
         // return if touched point is out of circle area
         int index = getCircleIndex(touchedX, touchedY);
         if (index == -1) {
-            Log.d(TAG, "touched point is OUT of the Circles");
             return true;
         }
         // adjust touched point to the center of the circle
@@ -403,7 +403,7 @@ public class GameView extends SurfaceView implements Runnable {
         return maxCombo;
     }
 
-    public void returnHome() {
+    public void returnHomeCheck() {
 
         long dialogStartedAt = System.currentTimeMillis();
 
@@ -445,7 +445,7 @@ public class GameView extends SurfaceView implements Runnable {
         builder.setNegativeButton(R.string.pause_dialog_quit, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User cancelled the dialog
-                returnHomeTrue();
+                returnHome();
             }
         });
 
@@ -455,7 +455,7 @@ public class GameView extends SurfaceView implements Runnable {
         dialog.show();
     }
 
-    void returnHomeTrue() {
+    public void returnHome() {
         Intent intent = new Intent(activity, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
