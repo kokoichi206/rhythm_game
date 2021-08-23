@@ -1,6 +1,8 @@
 package io.kokoichi.sample.rhythmgame;
 
+import android.content.Intent;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -20,7 +22,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     private Thread thread;
     private boolean isPlaying;
-    private Paint paint;
+    private Paint paint, sPaint;
     private int screenX, screenY;
     private GameActivity activity;
     private Random random;
@@ -29,11 +31,22 @@ public class GameView extends SurfaceView implements Runnable {
     private Circle[] circles;
     private ArrayList<Notes> notesList;
     private Position[] positions;
+    private Button button;
 
     private MyMediaPlayer myPlayer;
     private double[] dropTiming;
     private double musicStartingTime, musicEndingTime;
     private int num_bar;
+
+    private int combo = 0;
+    private int maxCombo = 0;
+    private Info info;      // information like "GOOD","PERFECT"
+    private static final int JUDGE_INFO_AGE = 15;
+
+    private class Info {
+        int age;            // the unit is loop count
+        String message;        // message like "GOOD","PERFECT"
+    }
 
     private class Position {
         int x, y;
@@ -84,13 +97,24 @@ public class GameView extends SurfaceView implements Runnable {
         notesList = new ArrayList<>();
 
         paint = new Paint();
+        paint.setTextSize(128);
+        paint.setColor(Color.BLACK);
+
+        // FIXME: There should be better ways
+        sPaint = new Paint();       // for SMALL text
+        sPaint.setTextSize(84);
+        sPaint.setColor(Color.GRAY);
+
+        info = new Info();
+        info.age = 0;
+        info.message = "";
 
         random = new Random();
 
         // Sound init
         // CHOOSE ONE MUSIC
         // All time related variables are milliseconds
-        myPlayer = new MyMediaPlayer(activity, R.raw.kimigayo);
+        myPlayer = new MyMediaPlayer(activity, R.raw.kimigayo, this);
         musicStartingTime = 5.108866213151927 * 1000;
         musicEndingTime = 45.24492063492064 * 1000;
         dropTiming = new double[]{0,
@@ -112,6 +136,8 @@ public class GameView extends SurfaceView implements Runnable {
             dropTiming[i] = dropTiming[i - 1] + dropTiming[i] * one_bar;
         }
 
+        button = new Button(getResources());
+
     }
 
     @Override
@@ -123,8 +149,8 @@ public class GameView extends SurfaceView implements Runnable {
         // set the params for count the timing
         long startedAt = System.currentTimeMillis();
         Log.d(TAG, "loop started at " + startedAt);
-        int notesIntex = 0;
-        double nextNotesTiming = dropTiming[notesIntex];
+        int notesIndex = 0;
+        double nextNotesTiming = dropTiming[notesIndex];
 
         while (isPlaying) {
 
@@ -143,8 +169,13 @@ public class GameView extends SurfaceView implements Runnable {
                     newNotes(1);
                 }
 
-                notesIntex += 1;
-                nextNotesTiming = dropTiming[notesIntex];
+                notesIndex += 1;
+                if (notesIndex < dropTiming.length) {
+                    nextNotesTiming = dropTiming[notesIndex];
+                } else {
+                    nextNotesTiming *= 2;
+                }
+
             }
         }
     }
@@ -164,12 +195,21 @@ public class GameView extends SurfaceView implements Runnable {
             notes.age += SLEEP_TIME;
             notes.y += notes.yLimit * SLEEP_TIME / notes.lifeTimeMilliSec;
 
-            if (notes.age > notes.lifeTimeMilliSec) {
+            if (notes.age > (notes.lifeTimeMilliSec + notes.OFFSET)) {
                 trashNotes.add(notes);
             }
         }
-        for (Notes notes : trashNotes) {
-            notesList.remove(notes);
+        if (trashNotes.size() > 0) {
+            for (Notes notes : trashNotes) {
+                notesList.remove(notes);
+            }
+            maxCombo = (combo > maxCombo) ? combo : maxCombo;
+            combo = 0;
+        }
+
+        // info: decrease age
+        if (info.age > 0) {
+            info.age -= 1;
         }
 
         return;
@@ -192,6 +232,19 @@ public class GameView extends SurfaceView implements Runnable {
         for (Notes notes : notesList) {
             canvas.drawBitmap(notes.notes, notes.x, notes.y, paint);
         }
+
+        // draw combo if combo > 0
+        if (combo > 0) {
+            drawTextCenter(canvas, combo + "", screenX / 2f, 164, paint);
+        }
+
+        // draw info if message exists
+        if (info.age > 0) {
+            drawTextCenter(canvas, info.message + "", screenX / 2f, 328, sPaint);
+        }
+
+        // draw Button
+        canvas.drawBitmap(button.button, button.startX, button.startY, paint);
 
         getHolder().unlockCanvasAndPost(canvas);
         return;
@@ -234,9 +287,15 @@ public class GameView extends SurfaceView implements Runnable {
         float touchedY = event.getY();
 
         // return if touched point is out of circle area
-        if (!isCircleTouched(touchedX, touchedY)) {
+        int index = getCircleIndex(touchedX, touchedY);
+        if (index == -1) {
+            Log.d(TAG, "touched point is OUT of the Circles");
             return true;
         }
+        // adjust touched point to the center of the circle
+        touchedX = circles[index].x + circles[index].length / 2;
+        touchedY = circles[index].y + circles[index].length / 2;
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
 
@@ -249,17 +308,22 @@ public class GameView extends SurfaceView implements Runnable {
                     if (dist < 1000) {
                         Log.d("hoge", "PERFECT");
                         touchedNotes = notes;
+                        updateInfo("PERFECT", JUDGE_INFO_AGE);
                     } else if (dist < 1500) {
                         Log.d("hoge", "GOOD");
                         touchedNotes = notes;
-                    } else if (dist < 2000) {
+                        updateInfo("GOOD", JUDGE_INFO_AGE);
+                    } else if (dist < 3000) {
                         Log.d("hoge", "OK");
                         touchedNotes = notes;
+                        updateInfo("OK", JUDGE_INFO_AGE);
                     }
                 }
 
                 if (touchedNotes != null) {
                     notesList.remove(touchedNotes);
+                    combo += 1;
+                    Log.d("hoge", "combo is " + combo);
                 }
 
                 break;
@@ -268,17 +332,41 @@ public class GameView extends SurfaceView implements Runnable {
         return true;
     }
 
-    private boolean isCircleTouched(float touchedX, float touchedY) {
+    private void drawTextCenter(Canvas canvas, String text, float x, float y, Paint paint) {
+        float width = paint.measureText(text);
+        float startX = x - width / 2;
+        float startY = y - (paint.getFontMetrics().descent + paint.getFontMetrics().ascent) / 2;
+        canvas.drawText(text, startX, startY, paint);
+    }
 
-        boolean isOnCircles = false;
+    private void updateInfo(String msg, int age) {
+        info.age = age;
+        info.message = msg;
+    }
 
-        for (Circle circle : circles) {
-            if (((touchedX > circle.x) && (touchedX < circle.x + circle.length)) &&
-                    ((touchedY > circle.y) && (touchedY < circle.y + circle.length))) {
-                isOnCircles = true;
+    private int getCircleIndex(float touchedX, float touchedY) {
+
+        int index = -1;
+        for (int i = 0; i < NOTES_NUM; i++) {
+            if (((touchedX > circles[i].x) && (touchedX < circles[i].x + circles[i].length)) &&
+                    ((touchedY > circles[i].y) && (touchedY < circles[i].y + circles[i].length))) {
+                index = i;
             }
         }
 
-        return isOnCircles;
+        return index;
+    }
+
+    public int getMaxCombo() {
+        return maxCombo;
+    }
+
+    public void returnHome() {
+        Intent intent = new Intent(activity, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.putExtra(MainActivity.INTENT_KEY_MAX_COMBO, getMaxCombo());
+//        activity.startActivity(intent);
+        activity.finish();
     }
 }
