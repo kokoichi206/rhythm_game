@@ -37,6 +37,7 @@ public class GameView extends SurfaceView implements Runnable {
     private int num_bar;
 
     private int combo = 0;
+    private static int maxCombo = 0;
     private Info info;      // information like "GOOD","PERFECT"
     private static final int JUDGE_INFO_AGE = 15;
 
@@ -111,7 +112,7 @@ public class GameView extends SurfaceView implements Runnable {
         // Sound init
         // CHOOSE ONE MUSIC
         // All time related variables are milliseconds
-        myPlayer = new MyMediaPlayer(activity, R.raw.kimigayo);
+        myPlayer = new MyMediaPlayer(activity, R.raw.kimigayo, this);
         musicStartingTime = 5.108866213151927 * 1000;
         musicEndingTime = 45.24492063492064 * 1000;
         dropTiming = new double[]{0,
@@ -193,6 +194,7 @@ public class GameView extends SurfaceView implements Runnable {
             for (Notes notes : trashNotes) {
                 notesList.remove(notes);
             }
+            maxCombo = (combo > maxCombo) ? combo : maxCombo;
             combo = 0;
         }
 
@@ -341,5 +343,9 @@ public class GameView extends SurfaceView implements Runnable {
         }
 
         return index;
+    }
+
+    public int getMaxCombo() {
+        return maxCombo;
     }
 }
