@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+    String TAG = GameView.class.getSimpleName();
+
     private static final int REQUEST_CODE_1 = 1;
     private DatabaseHelper dbHelper = new DatabaseHelper(this);
 
@@ -45,10 +47,11 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             // Return from gameActivity
             case (REQUEST_CODE_1):
+                Log.d(TAG, "Return Home from Game Play Activity");
                 if (resultCode == RESULT_OK) {
                     int max_combo_last_game = data.getIntExtra(INTENT_KEY_MAX_COMBO, 0);
                     if (max_combo_last_game > max_combo) {
-                        Log.d("hoge", "The max_combo is updated");
+                        Log.d(TAG, "The max_combo is updated");
                         max_combo = max_combo_last_game;
                         updateRecord(getString(R.string.music_1), max_combo);
                         displayMaxCombo();

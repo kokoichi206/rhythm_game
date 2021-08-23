@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GameView extends SurfaceView implements Runnable {
+
     String TAG = GameView.class.getSimpleName();
 
     private static final int SLEEP_TIME = Math.round(1000 / 60);
@@ -152,7 +153,7 @@ public class GameView extends SurfaceView implements Runnable {
         myPlayer.player.setOnCompletionListener(myPlayer);
 
         // set the params for count the timing only when FIRST called
-        if(loopStartedAt == 0) {
+        if (loopStartedAt == 0) {
             loopStartedAt = System.currentTimeMillis();
             notesIndex = 0;
             nextNotesTiming = dropTiming[notesIndex];
@@ -323,15 +324,12 @@ public class GameView extends SurfaceView implements Runnable {
                     double dist = Math.pow(notes.x + notes.length / 2 - touchedX, 2)
                             + Math.pow(notes.y + notes.length / 2 - touchedY, 2);
                     if (dist < 1000) {
-                        Log.d("hoge", "PERFECT");
                         touchedNotes = notes;
                         updateInfo("PERFECT", JUDGE_INFO_AGE);
                     } else if (dist < 1500) {
-                        Log.d("hoge", "GOOD");
                         touchedNotes = notes;
                         updateInfo("GOOD", JUDGE_INFO_AGE);
                     } else if (dist < 3000) {
-                        Log.d("hoge", "OK");
                         touchedNotes = notes;
                         updateInfo("OK", JUDGE_INFO_AGE);
                     }
@@ -340,7 +338,6 @@ public class GameView extends SurfaceView implements Runnable {
                 if (touchedNotes != null) {
                     notesList.remove(touchedNotes);
                     combo += 1;
-                    Log.d("hoge", "combo is " + combo);
                 }
 
                 break;
@@ -450,5 +447,4 @@ public class GameView extends SurfaceView implements Runnable {
         intent.putExtra(MainActivity.INTENT_KEY_MAX_COMBO, getMaxCombo());
         activity.finish();
     }
-
 }
