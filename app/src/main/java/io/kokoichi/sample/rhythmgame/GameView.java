@@ -1,5 +1,7 @@
 package io.kokoichi.sample.rhythmgame;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,7 +9,6 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -287,9 +288,11 @@ public class GameView extends SurfaceView implements Runnable {
         float touchedY = event.getY();
 
         if (isStopButtonTapped(touchedX, touchedY)) {
-            Log.d("hoge", "The stop-button is clicked");
-            // TODO: make modal to check the player is sure to return home
-            returnHome();
+            Log.d(TAG, "The stop-button is clicked");
+
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                returnHome();
+            }
             return true;
         }
 
@@ -382,18 +385,54 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     public void returnHome() {
-        // Do something before checking
+        // Pause music
+        int musicLength = 0;
         if (MyMediaPlayer.player != null) {
             if (MyMediaPlayer.player.isPlaying()) {
                 MyMediaPlayer.player.pause();
+                musicLength = MyMediaPlayer.player.getCurrentPosition();
             }
         }
 
+        //
+        // Make a dialog to check whether you really wanna go back home
+        //
+        // 1. Instantiate a builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        // 2. Set the dialog characteristics
+        builder.setMessage(R.string.pause_dialog_message)
+                .setTitle(R.string.pause_dialog_title);
+        // OK button = CONTINUE // CAUTION
+        final int finalMusicLength = musicLength;
+        builder.setPositiveButton(R.string.pause_dialog_continue, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                MyMediaPlayer.player.start();
+                MyMediaPlayer.player.seekTo(finalMusicLength);
+
+            }
+        });
+        // NG button = QUIT  // CAUTION
+        builder.setNegativeButton(R.string.pause_dialog_quit, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+                returnHomeTrue();
+            }
+        });
+
+        // 3. Make a dialog
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+    }
+
+    void returnHomeTrue() {
         Intent intent = new Intent(activity, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra(MainActivity.INTENT_KEY_MAX_COMBO, getMaxCombo());
-//        activity.startActivity(intent);
         activity.finish();
     }
+
 }
