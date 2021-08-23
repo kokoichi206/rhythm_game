@@ -10,7 +10,7 @@ public class Notes {
 
     Bitmap notes;
     int x, y, length, yLimit;
-    public static int lifeTimeMilliSec = 1000;
+    public static int lifeTimeMilliSec = 300;
     int age = 0;
     int OFFSET = 180;
 
@@ -18,9 +18,7 @@ public class Notes {
 
         notes = BitmapFactory.decodeResource(res, R.drawable.notes);
 
-        length = notes.getWidth();
-
-        length /= 2;
+        length = 210;
 
         length = (int) (length * screenRatioX);
 
