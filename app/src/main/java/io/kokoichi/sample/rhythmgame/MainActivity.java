@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         deleteRecord(getString(R.string.music_1));
         insertCombo(getString(R.string.music_1), 2);
-        
+
         // Get the max combo
         max_combo = getHighCombo();
 
@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Get music high score (combo) from local db
+     * return -1 if there is no record
      *
      * @return
      */
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
 
-                int idx = cursor.getColumnIndex("combo");
+                int idx = cursor.getColumnIndex(dbHelper.COLUMN_COMBO);
                 combo = Integer.parseInt(cursor.getString(idx));
             } else {
                 combo = -1;
@@ -119,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put("name", music);
-        values.put("combo", combo);
+        values.put(dbHelper.COLUMN_MUSIC_NAME, music);
+        values.put(dbHelper.COLUMN_COMBO, combo);
 
         return db.insert(dbHelper.TABLE_NAME, null, values);
     }
@@ -128,17 +129,18 @@ public class MainActivity extends AppCompatActivity {
     private boolean deleteRecord (String music){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        return db.delete(dbHelper.TABLE_NAME, "name = '" + music + "'", null) == 1;
+        // True if a record existed and was successfully deleted.
+        return db.delete(dbHelper.TABLE_NAME, dbHelper.COLUMN_MUSIC_NAME + " = '" + music + "'", null) == 1;
     }
 
     private long updateRecord (String music,int combo){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put("name", music);
-        values.put("combo", combo);
+        values.put(dbHelper.COLUMN_MUSIC_NAME, music);
+        values.put(dbHelper.COLUMN_COMBO, combo);
 
-        String whereClause = "name = '" + music + "'";
+        String whereClause = dbHelper.COLUMN_MUSIC_NAME + " = '" + music + "'";
 
         return db.update(dbHelper.TABLE_NAME, values, whereClause, null);
     }

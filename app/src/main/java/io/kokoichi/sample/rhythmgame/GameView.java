@@ -17,8 +17,23 @@ public class GameView extends SurfaceView implements Runnable {
 
     String TAG = GameView.class.getSimpleName();
 
+    // CONSTANTS related game playing
     private static final int SLEEP_TIME = Math.round(1000 / 60);
     private int NOTES_NUM = 5;  // type 1-NOTES_NUM
+    private final int CANVAS_TEXT_SIZE = 128;
+    private final int CANVAS_TEXT_SIZE_SMALL = 84;
+    private static final int NEW_NOTES_START_Y = 128;
+    protected enum NotesTimings {
+        PERFECT,
+        GREAT,
+        GOOD;
+    }
+    private static final int DISTANCE_PERFECT = 1500;
+    private static final int DISTANCE_GREAT = 2000;
+    private static final int DISTANCE_GOOD = 3000;
+    private static final int TIMING_INFO_AGE = 15;
+    private static final float DEFAULT_SCREEN_SIZE_X = 1920f;
+    private static final float DEFAULT_SCREEN_SIZE_Y = 1080f;
 
     public static float screenRatioX, screenRatioY;
 
@@ -43,7 +58,6 @@ public class GameView extends SurfaceView implements Runnable {
     private int combo = 0;
     private int maxCombo = 0;
     private Info info;      // information like "GOOD","PERFECT"
-    private static final int JUDGE_INFO_AGE = 15;
 
     private long loopStartedAt;
     private int notesIndex;
@@ -54,6 +68,7 @@ public class GameView extends SurfaceView implements Runnable {
         String message;        // message like "GOOD","PERFECT"
     }
 
+    // Position to put Circle[]
     private class Position {
         int x, y;
     }
@@ -67,8 +82,8 @@ public class GameView extends SurfaceView implements Runnable {
         this.screenY = screenY;
 
         // FIXME
-        screenRatioX = 1920f / screenX;
-        screenRatioY = 1080f / screenY;
+        screenRatioX = DEFAULT_SCREEN_SIZE_X / screenX;
+        screenRatioY = DEFAULT_SCREEN_SIZE_Y / screenY;
 
         // Calculate notes position settings
         positions = new Position[NOTES_NUM];
@@ -103,12 +118,12 @@ public class GameView extends SurfaceView implements Runnable {
         notesList = new ArrayList<>();
 
         paint = new Paint();
-        paint.setTextSize(128);
+        paint.setTextSize(CANVAS_TEXT_SIZE);
         paint.setColor(Color.BLACK);
 
         // FIXME: There should be better ways
         sPaint = new Paint();       // for SMALL text
-        sPaint.setTextSize(84);
+        sPaint.setTextSize(CANVAS_TEXT_SIZE_SMALL);
         sPaint.setColor(Color.GRAY);
 
         info = new Info();
@@ -283,7 +298,7 @@ public class GameView extends SurfaceView implements Runnable {
 
         Notes notes = new Notes(getResources());
         notes.x = positions[index].x;
-        notes.y = 128;
+        notes.y = NEW_NOTES_START_Y;
         notes.yLimit = positions[index].y + notes.OFFSET;   // a little bit overshoot
         notesList.add(notes);
 
@@ -323,15 +338,15 @@ public class GameView extends SurfaceView implements Runnable {
 
                     double dist = Math.pow(notes.x + notes.length / 2 - touchedX, 2)
                             + Math.pow(notes.y + notes.length / 2 - touchedY, 2);
-                    if (dist < 1000) {
+                    if (dist < DISTANCE_PERFECT) {
                         touchedNotes = notes;
-                        updateInfo("PERFECT", JUDGE_INFO_AGE);
-                    } else if (dist < 1500) {
+                        updateInfo(String.valueOf(NotesTimings.PERFECT), TIMING_INFO_AGE);
+                    } else if (dist < DISTANCE_GREAT) {
                         touchedNotes = notes;
-                        updateInfo("GOOD", JUDGE_INFO_AGE);
-                    } else if (dist < 3000) {
+                        updateInfo(String.valueOf(NotesTimings.GREAT), TIMING_INFO_AGE);
+                    } else if (dist < DISTANCE_GOOD) {
                         touchedNotes = notes;
-                        updateInfo("OK", JUDGE_INFO_AGE);
+                        updateInfo(String.valueOf(NotesTimings.GOOD), TIMING_INFO_AGE);
                     }
                 }
 

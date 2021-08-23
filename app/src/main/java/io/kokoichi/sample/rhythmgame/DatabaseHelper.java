@@ -3,10 +3,6 @@ package io.kokoichi.sample.rhythmgame;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.ContactsContract;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version!!
@@ -15,14 +11,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_NAME = "PlayRecords";
     public static final String _ID = "id";
-    public static final String MUSIC_NAME = "name";
-    public static final String COMBO = "combo";
+    public static final String COLUMN_MUSIC_NAME = "name";
+    public static final String COLUMN_COMBO = "combo";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + DatabaseHelper.TABLE_NAME + " (" +
                     _ID + " INTEGER PRIMARY KEY," +
-                    MUSIC_NAME + " TEXT," +
-                    COMBO + " INTEGER)";
+                    COLUMN_MUSIC_NAME + " TEXT," +
+                    COLUMN_COMBO + " INTEGER)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
