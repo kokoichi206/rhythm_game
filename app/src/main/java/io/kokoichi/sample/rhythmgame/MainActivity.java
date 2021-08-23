@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         deleteRecord(getString(R.string.music_1));
         insertCombo(getString(R.string.music_1), 2);
+        
         // Get the max combo
         max_combo = getHighCombo();
 
@@ -85,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private int getHighCombo () {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-//        Cursor c = db.rawQuery("select * from table where column = ?",new String[]{"data"});
         int combo = 0;
         Cursor cursor = null;
         try {
