@@ -1,5 +1,7 @@
 package io.kokoichi.sample.rhythmgame;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,7 +9,6 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -33,7 +34,7 @@ public class GameView extends SurfaceView implements Runnable {
     private Position[] positions;
     private Button button;
 
-    private MyMediaPlayer myPlayer;
+    public MyMediaPlayer myPlayer;
     private double[] dropTiming;
     private double musicStartingTime, musicEndingTime;
     private int num_bar;
@@ -42,6 +43,10 @@ public class GameView extends SurfaceView implements Runnable {
     private int maxCombo = 0;
     private Info info;      // information like "GOOD","PERFECT"
     private static final int JUDGE_INFO_AGE = 15;
+
+    private long loopStartedAt;
+    private int notesIndex;
+    private double nextNotesTiming;
 
     private class Info {
         int age;            // the unit is loop count
@@ -146,11 +151,14 @@ public class GameView extends SurfaceView implements Runnable {
         myPlayer.player.start();
         myPlayer.player.setOnCompletionListener(myPlayer);
 
-        // set the params for count the timing
-        long startedAt = System.currentTimeMillis();
-        Log.d(TAG, "loop started at " + startedAt);
-        int notesIndex = 0;
-        double nextNotesTiming = dropTiming[notesIndex];
+        // set the params for count the timing only when FIRST called
+        if(loopStartedAt == 0) {
+            loopStartedAt = System.currentTimeMillis();
+            notesIndex = 0;
+            nextNotesTiming = dropTiming[notesIndex];
+        }
+
+        Log.d(TAG, "loop started at " + loopStartedAt);
 
         while (isPlaying) {
 
@@ -159,7 +167,7 @@ public class GameView extends SurfaceView implements Runnable {
 //            sleep();
 
             // drop the notes when the time comes
-            if (System.currentTimeMillis() - startedAt > nextNotesTiming) {
+            if (System.currentTimeMillis() - loopStartedAt > nextNotesTiming) {
 
                 // pass the type (NOT index)
                 int notesType = random.nextInt(NOTES_NUM) + 1;
@@ -286,6 +294,15 @@ public class GameView extends SurfaceView implements Runnable {
         float touchedX = event.getX();
         float touchedY = event.getY();
 
+        if (isStopButtonTapped(touchedX, touchedY)) {
+            Log.d(TAG, "The stop-button is clicked");
+
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                returnHome();
+            }
+            return true;
+        }
+
         // return if touched point is out of circle area
         int index = getCircleIndex(touchedX, touchedY);
         if (index == -1) {
@@ -357,16 +374,81 @@ public class GameView extends SurfaceView implements Runnable {
         return index;
     }
 
+    /**
+     * Check if the stop button is tapped
+     * MAYBE: Generalize this function !
+     *
+     * @return
+     */
+    protected boolean isStopButtonTapped(float touchedX, float touchedY) {
+        // How roughly the button can be clicked
+        double RATIO = 2.5;
+        return (((touchedX > button.x - button.length * (RATIO - 1)) && (touchedX < button.x + button.length * RATIO)) &&
+                ((touchedY > button.y - button.length * (RATIO - 1)) && (touchedY < button.y + button.length * RATIO)));
+    }
+
     public int getMaxCombo() {
         return maxCombo;
     }
 
     public void returnHome() {
+
+        long dialogStartedAt = System.currentTimeMillis();
+
+        // Pause music
+        int musicLength = 0;
+        if (MyMediaPlayer.player != null) {
+            if (MyMediaPlayer.player.isPlaying()) {
+                MyMediaPlayer.player.pause();
+                musicLength = MyMediaPlayer.player.getCurrentPosition();
+            }
+        }
+        pause();
+
+        //
+        // Make a dialog to check whether you really wanna go back home
+        //
+        // 1. Instantiate a builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        // 2. Set the dialog characteristics
+        builder.setMessage(R.string.pause_dialog_message)
+                .setTitle(R.string.pause_dialog_title);
+        // OK button = CONTINUE // CAUTION
+        final int finalMusicLength = musicLength;
+        builder.setPositiveButton(R.string.pause_dialog_continue, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                MyMediaPlayer.player.start();
+                MyMediaPlayer.player.seekTo(finalMusicLength);
+
+                long dialogEndedAt = System.currentTimeMillis();
+
+                // Shift the started time to adjust the dropping start timing.
+                loopStartedAt += dialogEndedAt - dialogStartedAt;
+                resume();
+            }
+        });
+        // NG button = QUIT  // CAUTION
+        builder.setNegativeButton(R.string.pause_dialog_quit, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+                returnHomeTrue();
+            }
+        });
+
+        // 3. Make a dialog
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+    }
+
+    void returnHomeTrue() {
         Intent intent = new Intent(activity, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra(MainActivity.INTENT_KEY_MAX_COMBO, getMaxCombo());
-//        activity.startActivity(intent);
         activity.finish();
     }
+
 }
