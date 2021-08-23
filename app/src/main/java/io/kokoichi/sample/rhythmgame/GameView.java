@@ -1,5 +1,6 @@
 package io.kokoichi.sample.rhythmgame;
 
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -30,6 +31,7 @@ public class GameView extends SurfaceView implements Runnable {
     private Circle[] circles;
     private ArrayList<Notes> notesList;
     private Position[] positions;
+    private Button button;
 
     private MyMediaPlayer myPlayer;
     private double[] dropTiming;
@@ -37,6 +39,7 @@ public class GameView extends SurfaceView implements Runnable {
     private int num_bar;
 
     private int combo = 0;
+    private int maxCombo = 0;
     private Info info;      // information like "GOOD","PERFECT"
     private static final int JUDGE_INFO_AGE = 15;
 
@@ -111,7 +114,7 @@ public class GameView extends SurfaceView implements Runnable {
         // Sound init
         // CHOOSE ONE MUSIC
         // All time related variables are milliseconds
-        myPlayer = new MyMediaPlayer(activity, R.raw.kimigayo);
+        myPlayer = new MyMediaPlayer(activity, R.raw.kimigayo, this);
         musicStartingTime = 5.108866213151927 * 1000;
         musicEndingTime = 45.24492063492064 * 1000;
         dropTiming = new double[]{0,
@@ -132,6 +135,8 @@ public class GameView extends SurfaceView implements Runnable {
         for (int i = 1; i < dropTiming.length; i++) {
             dropTiming[i] = dropTiming[i - 1] + dropTiming[i] * one_bar;
         }
+
+        button = new Button(getResources());
 
     }
 
@@ -165,7 +170,12 @@ public class GameView extends SurfaceView implements Runnable {
                 }
 
                 notesIndex += 1;
-                nextNotesTiming = dropTiming[notesIndex];
+                if (notesIndex < dropTiming.length) {
+                    nextNotesTiming = dropTiming[notesIndex];
+                } else {
+                    nextNotesTiming *= 2;
+                }
+
             }
         }
     }
@@ -193,6 +203,7 @@ public class GameView extends SurfaceView implements Runnable {
             for (Notes notes : trashNotes) {
                 notesList.remove(notes);
             }
+            maxCombo = (combo > maxCombo) ? combo : maxCombo;
             combo = 0;
         }
 
@@ -231,6 +242,9 @@ public class GameView extends SurfaceView implements Runnable {
         if (info.age > 0) {
             drawTextCenter(canvas, info.message + "", screenX / 2f, 328, sPaint);
         }
+
+        // draw Button
+        canvas.drawBitmap(button.button, button.startX, button.startY, paint);
 
         getHolder().unlockCanvasAndPost(canvas);
         return;
@@ -341,5 +355,18 @@ public class GameView extends SurfaceView implements Runnable {
         }
 
         return index;
+    }
+
+    public int getMaxCombo() {
+        return maxCombo;
+    }
+
+    public void returnHome() {
+        Intent intent = new Intent(activity, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.putExtra(MainActivity.INTENT_KEY_MAX_COMBO, getMaxCombo());
+//        activity.startActivity(intent);
+        activity.finish();
     }
 }

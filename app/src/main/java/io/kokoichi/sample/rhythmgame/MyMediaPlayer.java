@@ -10,15 +10,21 @@ import android.util.Log;
 
 import java.io.IOException;
 
+import static android.app.Activity.RESULT_OK;
 import static androidx.core.content.ContextCompat.startActivity;
 
 public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
     String TAG = MyMediaPlayer.class.getSimpleName();
 
     MediaPlayer player = null;
-    Activity activity;
+    Activity activityInMedia;
 
-    public MyMediaPlayer(Activity activity, int musicResId) {
+    GameView gameViewInMedia;
+
+    public MyMediaPlayer(Activity activity, int musicResId, GameView gameView) {
+
+        gameViewInMedia = gameView;
+        activityInMedia = activity;
 
         player = MediaPlayer.create(activity.getApplicationContext(), R.raw.kimigayo);
 
@@ -36,14 +42,10 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
     public void onCompletion(MediaPlayer arg0) {
         // TODO:
         // Tell view Activity to return to home Activity
-        Log.d(TAG, "Completion of the media");
-        Log.d(TAG, "loop ended at " + System.currentTimeMillis());
 
-
-        Intent intent = new Intent(activity, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        activity.startActivity(intent);
-        activity.finish();
+        Intent intent = new Intent();
+        intent.putExtra(MainActivity.INTENT_KEY_MAX_COMBO, gameViewInMedia.getMaxCombo());
+        activityInMedia.setResult(RESULT_OK, intent);
+        activityInMedia.finish();
     }
 }
