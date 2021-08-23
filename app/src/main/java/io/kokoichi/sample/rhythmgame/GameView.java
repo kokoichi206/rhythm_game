@@ -286,6 +286,13 @@ public class GameView extends SurfaceView implements Runnable {
         float touchedX = event.getX();
         float touchedY = event.getY();
 
+        if (isStopButtonTapped(touchedX, touchedY)) {
+            Log.d("hoge", "The stop-button is clicked");
+            // TODO: make modal to check the player is sure to return home
+            returnHome();
+            return true;
+        }
+
         // return if touched point is out of circle area
         int index = getCircleIndex(touchedX, touchedY);
         if (index == -1) {
@@ -355,6 +362,19 @@ public class GameView extends SurfaceView implements Runnable {
         }
 
         return index;
+    }
+
+    /**
+     * Check if the stop button is tapped
+     * MAYBE: Generalize this function !
+     *
+     * @return
+     */
+    protected boolean isStopButtonTapped(float touchedX, float touchedY) {
+        // How roughly the button can be clicked
+        double RATIO = 2.5;
+        return (((touchedX > button.x - button.length * (RATIO - 1)) && (touchedX < button.x + button.length * RATIO)) &&
+                ((touchedY > button.y - button.length * (RATIO - 1)) && (touchedY < button.y + button.length * RATIO)));
     }
 
     public int getMaxCombo() {
