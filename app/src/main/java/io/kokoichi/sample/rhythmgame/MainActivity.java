@@ -3,7 +3,6 @@ package io.kokoichi.sample.rhythmgame;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,6 +11,8 @@ import android.util.Log;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+
+    String TAG = GameView.class.getSimpleName();
 
     private static final int REQUEST_CODE_1 = 1;
     private DatabaseHelper dbHelper = new DatabaseHelper(this);
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         deleteRecord(getString(R.string.music_1));
         insertCombo(getString(R.string.music_1), 2);
+
         // Get the max combo
         max_combo = getHighCombo();
 
@@ -46,10 +48,11 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             // Return from gameActivity
             case (REQUEST_CODE_1):
+                Log.d(TAG, "Return Home from Game Play Activity");
                 if (resultCode == RESULT_OK) {
                     int max_combo_last_game = data.getIntExtra(INTENT_KEY_MAX_COMBO, 0);
                     if (max_combo_last_game > max_combo) {
-                        Log.d("hoge", "The max_combo is updated");
+                        Log.d(TAG, "The max_combo is updated");
                         max_combo = max_combo_last_game;
                         updateRecord(getString(R.string.music_1), max_combo);
                         displayMaxCombo();
@@ -78,12 +81,12 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Get music high score (combo) from local db
+     * return -1 if there is no record
      *
      * @return
      */
     private int getHighCombo () {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-//        Cursor c = db.rawQuery("select * from table where column = ?",new String[]{"data"});
         int combo = 0;
         Cursor cursor = null;
         try {
@@ -93,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
 
-                int idx = cursor.getColumnIndex("combo");
+                int idx = cursor.getColumnIndex(dbHelper.COLUMN_COMBO);
                 combo = Integer.parseInt(cursor.getString(idx));
             } else {
                 combo = -1;
@@ -117,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put("name", music);
-        values.put("combo", combo);
+        values.put(dbHelper.COLUMN_MUSIC_NAME, music);
+        values.put(dbHelper.COLUMN_COMBO, combo);
 
         return db.insert(dbHelper.TABLE_NAME, null, values);
     }
@@ -126,17 +129,18 @@ public class MainActivity extends AppCompatActivity {
     private boolean deleteRecord (String music){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        return db.delete(dbHelper.TABLE_NAME, "name = '" + music + "'", null) == 1;
+        // True if a record existed and was successfully deleted.
+        return db.delete(dbHelper.TABLE_NAME, dbHelper.COLUMN_MUSIC_NAME + " = '" + music + "'", null) == 1;
     }
 
     private long updateRecord (String music,int combo){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put("name", music);
-        values.put("combo", combo);
+        values.put(dbHelper.COLUMN_MUSIC_NAME, music);
+        values.put(dbHelper.COLUMN_COMBO, combo);
 
-        String whereClause = "name = '" + music + "'";
+        String whereClause = dbHelper.COLUMN_MUSIC_NAME + " = '" + music + "'";
 
         return db.update(dbHelper.TABLE_NAME, values, whereClause, null);
     }
