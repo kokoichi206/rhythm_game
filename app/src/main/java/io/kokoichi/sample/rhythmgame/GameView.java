@@ -50,6 +50,7 @@ public class GameView extends SurfaceView implements Runnable {
     private ArrayList<Notes> notesList;
     private Position[] positions;
     private Button button;
+    private HpBar hpBar;
 
     public MyMediaPlayer myPlayer;
     private double[] dropTiming;
@@ -157,6 +158,9 @@ public class GameView extends SurfaceView implements Runnable {
         for (int i = 1; i < dropTiming.length; i++) {
             dropTiming[i] = dropTiming[i - 1] + dropTiming[i] * one_bar;
         }
+
+        // HP Bar init
+        hpBar = new HpBar(getResources());
 
         button = new Button(getResources());
 
@@ -272,6 +276,10 @@ public class GameView extends SurfaceView implements Runnable {
 
         // draw Button
         canvas.drawBitmap(button.button, button.startX, button.startY, paint);
+
+        // draw HP Bar
+        canvas.drawBitmap(hpBar.max_hp_bar, hpBar.x, hpBar.y, paint);
+        canvas.drawBitmap(hpBar.hp_bar, hpBar.x, hpBar.y, paint);
 
         getHolder().unlockCanvasAndPost(canvas);
         return;
