@@ -19,6 +19,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     // CONSTANTS related game playing
     private static final int SLEEP_TIME = Math.round(1000 / 60);
+    private static final int ONE_LOOP_TIME = 20; // MilliSecond
     private int NOTES_NUM = 5;  // type 1-NOTES_NUM
     private final int CANVAS_TEXT_SIZE = 128;
     private final int CANVAS_TEXT_SIZE_SMALL = 84;
@@ -216,9 +217,13 @@ public class GameView extends SurfaceView implements Runnable {
         // move notes
         ArrayList<Notes> trashNotes = new ArrayList<>();
         for (Notes notes : notesList) {
-            notes.age += SLEEP_TIME;
-            notes.y += notes.yLimit * SLEEP_TIME / notes.lifeTimeMilliSec;
+            notes.age += ONE_LOOP_TIME;
+            notes.y += notes.yLimit * ONE_LOOP_TIME / notes.lifeTimeMilliSec;
 
+            if (notes.age > notes.lifeTimeMilliSec + notes.OFFSET_DEAD) {
+                maxCombo = (combo > maxCombo) ? combo : maxCombo;
+                combo = 0;
+            }
             if (notes.age > (notes.lifeTimeMilliSec + notes.OFFSET)) {
                 trashNotes.add(notes);
             }
@@ -227,8 +232,6 @@ public class GameView extends SurfaceView implements Runnable {
             for (Notes notes : trashNotes) {
                 notesList.remove(notes);
             }
-            maxCombo = (combo > maxCombo) ? combo : maxCombo;
-            combo = 0;
         }
 
         // info: decrease age

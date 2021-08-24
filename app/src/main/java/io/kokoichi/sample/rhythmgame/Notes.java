@@ -8,6 +8,7 @@ import static io.kokoichi.sample.rhythmgame.GameView.screenRatioX;
 
 public class Notes {
 
+    public static final int OFFSET_DEAD = 30;
     Bitmap notes;
     int x, y, length = 210, yLimit;
     public static int lifeTimeMilliSec = 300;
