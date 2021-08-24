@@ -161,6 +161,9 @@ public class GameView extends SurfaceView implements Runnable {
 
         // HP Bar init
         hpBar = new HpBar(getResources());
+        // FIXME: Who should have this info(max_hp)?
+        hpBar.max_hp = 15;
+        hpBar.current_hp = hpBar.max_hp;
 
         button = new Button(getResources());
 
@@ -224,10 +227,18 @@ public class GameView extends SurfaceView implements Runnable {
             notes.age += ONE_LOOP_TIME;
             notes.y += notes.yLimit * ONE_LOOP_TIME / notes.lifeTimeMilliSec;
 
-            if (notes.age > notes.lifeTimeMilliSec + notes.OFFSET_DEAD) {
-                maxCombo = (combo > maxCombo) ? combo : maxCombo;
-                combo = 0;
+            if (notes.isAlive) {
+                if (notes.age > notes.lifeTimeMilliSec + notes.OFFSET_DEAD) {
+                    maxCombo = (combo > maxCombo) ? combo : maxCombo;
+                    combo = 0;
+
+                    hpBar.current_hp -= 1;
+                    hpBar.update();
+
+                    notes.isAlive = false;
+                }
             }
+
             if (notes.age > (notes.lifeTimeMilliSec + notes.OFFSET)) {
                 trashNotes.add(notes);
             }

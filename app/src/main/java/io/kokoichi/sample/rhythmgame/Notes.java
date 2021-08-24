@@ -14,6 +14,7 @@ public class Notes {
     public static int lifeTimeMilliSec = 300;
     int age = 0;
     int OFFSET = 180;   // Overshoot milli sec
+    boolean isAlive;
 
     Notes(Resources res) {
 
@@ -24,6 +25,8 @@ public class Notes {
         notes = Bitmap.createScaledBitmap(notes, length, length, false);
 
         yLimit -= length;
+
+        isAlive = true;
     }
 
 }
