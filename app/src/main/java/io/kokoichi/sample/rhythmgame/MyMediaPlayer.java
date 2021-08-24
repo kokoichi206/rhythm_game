@@ -1,17 +1,13 @@
 package io.kokoichi.sample.rhythmgame;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.media.MediaPlayer;
-import android.os.Bundle;
 import android.util.Log;
 
 import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
-import static androidx.core.content.ContextCompat.startActivity;
 
 public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
     String TAG = MyMediaPlayer.class.getSimpleName();

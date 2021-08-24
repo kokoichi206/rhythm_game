@@ -9,16 +9,14 @@ import static io.kokoichi.sample.rhythmgame.GameView.screenRatioX;
 public class Notes {
 
     Bitmap notes;
-    int x, y, length, yLimit;
+    int x, y, length = 210, yLimit;
     public static int lifeTimeMilliSec = 300;
     int age = 0;
-    int OFFSET = 180;
+    int OFFSET = 180;   // Overshoot milli sec
 
     Notes(Resources res) {
 
         notes = BitmapFactory.decodeResource(res, R.drawable.notes);
-
-        length = 210;
 
         length = (int) (length * screenRatioX);
 

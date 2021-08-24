@@ -11,15 +11,13 @@ import static io.kokoichi.sample.rhythmgame.GameView.screenRatioY;
 public class Button {
 
     Bitmap button;
-    int x, y, length;
+    int x, y, length =54;
     int startX = 1700;
     int startY = 100;
 
     Button(Resources res) {
 
         button = BitmapFactory.decodeResource(res, R.drawable.pause_button);
-
-        length =54;
 
         length = (int) (length * screenRatioX);
         x = (int) (startX * screenRatioX);
