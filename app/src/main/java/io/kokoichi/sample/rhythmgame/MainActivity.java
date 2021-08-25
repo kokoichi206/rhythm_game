@@ -30,8 +30,17 @@ public class MainActivity extends AppCompatActivity {
     // SharedPreference settings
     SharedPreferences data;
     String prefName = "UserData";
-    String prefRankName = "Rank";
-    String prefExpName = "Experience";
+    public enum PrefKeys {
+        Rank(1),
+        Experience(0),
+        ;
+
+        private final int defaultValue;
+
+        private PrefKeys(int val) {
+            this.defaultValue = val;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
         combo_text.setText(message);
 
         // Init SharedPref and get value
-        SharedPreferences data = getSharedPreferences(prefName, MODE_PRIVATE);
-        int rank = data.getInt(prefRankName, 1);
-        int exp = data.getInt(prefExpName, 0);
+        data = getSharedPreferences(prefName, MODE_PRIVATE);
+        int rank = data.getInt(PrefKeys.Rank.toString(), PrefKeys.Rank.defaultValue);
+        int exp = data.getInt(PrefKeys.Experience.toString(), PrefKeys.Experience.defaultValue);
 
         me.exp = exp;
         me.rank = rank;
@@ -73,7 +82,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         super.onActivityResult(requestCode, resultCode, data);
+
         switch (requestCode) {
             // Return from gameActivity
             case (REQUEST_CODE_1):
@@ -105,6 +116,18 @@ public class MainActivity extends AppCompatActivity {
             default:
                 break;
         }
+        // Save PrefKeys to SharedPreferences
+        savePref();
+    }
+
+    public void savePref() {
+        SharedPreferences dataPref = getSharedPreferences(prefName, MODE_PRIVATE);
+        SharedPreferences.Editor editor = dataPref.edit();
+
+        editor.putInt(PrefKeys.Rank.toString(), me.rank);
+        editor.putInt(PrefKeys.Experience.toString(), me.exp);
+        editor.commit();
+        //        editor.apply();
     }
 
     private void changeRank() {
@@ -121,17 +144,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy () {
-
-        // Save user exp and lv
-        SharedPreferences data = getSharedPreferences(prefName, MODE_PRIVATE);
-        SharedPreferences.Editor editor = data.edit();
-
-        editor.putInt(prefRankName, me.rank);
-        editor.putInt(prefExpName, me.exp);
-
-        editor.commit();
-//        editor.apply();
+    protected void onDestroy() {
 
         dbHelper.close();
         super.onDestroy();
@@ -143,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @return
      */
-    private int getHighCombo () {
+    private int getHighCombo() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         int combo = 0;
         Cursor cursor = null;
@@ -169,12 +182,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     *
      * @param music
      * @param combo
      * @return the number of lines (if not found, return -1)
      */
-    private long insertCombo (String music,int combo){
+    private long insertCombo(String music, int combo) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -184,14 +196,14 @@ public class MainActivity extends AppCompatActivity {
         return db.insert(dbHelper.TABLE_NAME, null, values);
     }
 
-    private boolean deleteRecord (String music){
+    private boolean deleteRecord(String music) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // True if a record existed and was successfully deleted.
         return db.delete(dbHelper.TABLE_NAME, dbHelper.COLUMN_MUSIC_NAME + " = '" + music + "'", null) == 1;
     }
 
-    private long updateRecord (String music,int combo){
+    private long updateRecord(String music, int combo) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
