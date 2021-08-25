@@ -13,6 +13,7 @@ public class HpBar {
 
     int x = 100;
     int y = 80;
+    int edge = 3;
     int width = 400;
     int current_width;
     int height = 80;
@@ -20,7 +21,7 @@ public class HpBar {
     int max_hp;
     int current_hp;
 
-    HpBar (Resources res) {
+    HpBar(Resources res) {
 
         hp_bar = BitmapFactory.decodeResource(res, R.drawable.hp_bar);
         max_hp_bar = BitmapFactory.decodeResource(res, R.drawable.max_hp_bar);
@@ -31,14 +32,14 @@ public class HpBar {
         width = (int) (width * screenRatioX);
         height = (int) (height * screenRatioY);
 
-        hp_bar = Bitmap.createScaledBitmap(hp_bar, width, height, false);
         max_hp_bar = Bitmap.createScaledBitmap(max_hp_bar, width, height, false);
+        hp_bar = Bitmap.createScaledBitmap(hp_bar, width - 2 * edge, height - 2 * edge, false);
     }
 
     void update() {
 
         int new_width = width * current_hp / max_hp;
-        hp_bar = Bitmap.createScaledBitmap(hp_bar, new_width, height, false);
+        hp_bar = Bitmap.createScaledBitmap(hp_bar, new_width - 2 * edge, height - 2 * edge, false);
 
     }
 }
