@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -64,6 +65,10 @@ public class GameView extends SurfaceView implements Runnable {
     private long loopStartedAt;
     private int notesIndex;
     private double nextNotesTiming;
+
+    private final Handler handler;
+    AlertDialog dialog;
+    private AlertDialog.Builder builder;
 
     private class Info {
         int age;            // the unit is loop count
@@ -162,11 +167,12 @@ public class GameView extends SurfaceView implements Runnable {
         // HP Bar init
         hpBar = new HpBar(getResources());
         // FIXME: Who should have this info(max_hp)?
-        hpBar.max_hp = 15;
+        hpBar.max_hp = 3;
         hpBar.current_hp = hpBar.max_hp;
 
         button = new Button(getResources());
 
+        handler = new Handler();
     }
 
     @Override
@@ -233,7 +239,14 @@ public class GameView extends SurfaceView implements Runnable {
                     combo = 0;
 
                     hpBar.current_hp -= 1;
-                    hpBar.update();
+                    // Check the current HP > 0 <=> Is still alive ?
+                    // MAYBE: Separate "alive check" and "update func"
+                    if (hpBar.current_hp > 0) {
+                        hpBar.update();
+                    } else {
+                        gameOverDialog();
+                        isPlaying = false;
+                    }
 
                     notes.isAlive = false;
                 }
@@ -442,8 +455,7 @@ public class GameView extends SurfaceView implements Runnable {
         //
         // Make a dialog to check whether you really wanna go back home
         //
-        // 1. Instantiate a builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder = new AlertDialog.Builder(activity);
 
         // 2. Set the dialog characteristics
         builder.setMessage(R.string.pause_dialog_message)
@@ -472,7 +484,7 @@ public class GameView extends SurfaceView implements Runnable {
         });
 
         // 3. Make a dialog
-        AlertDialog dialog = builder.create();
+        dialog = builder.create();
 
         dialog.show();
     }
@@ -484,4 +496,46 @@ public class GameView extends SurfaceView implements Runnable {
         intent.putExtra(MainActivity.INTENT_KEY_MAX_COMBO, getMaxCombo());
         activity.finish();
     }
+
+    private void gameOverDialog() {
+
+
+        // Release music
+        if (MyMediaPlayer.player != null) {
+            if (MyMediaPlayer.player.isPlaying()) {
+                MyMediaPlayer.player.pause();
+            }
+        }
+
+        //
+        // Make a dialog to check whether you really wanna go back home
+        //
+        // 1. Instantiate a builder
+        builder = new AlertDialog.Builder(activity);
+
+        // 2. Set the dialog characteristics
+        builder.setMessage(R.string.dead_dialog_message)
+                .setTitle(R.string.dead_dialog_title);
+        // OK button
+        builder.setPositiveButton(R.string.dead_dialog_ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                dialog.dismiss();
+                activity.finish();
+
+            }
+        });
+
+        showDialog(builder);
+    }
+
+    void showDialog(AlertDialog.Builder builder ){
+        handler.post(() -> {
+
+            dialog = builder.create();
+            dialog.show();
+
+        });
+    }
+
 }
