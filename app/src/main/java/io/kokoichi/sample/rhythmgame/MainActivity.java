@@ -8,6 +8,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private int max_combo;
 
     public Me me;
+    int max_bar_width, max_exp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         me = new Me();
+        max_bar_width = findViewById(R.id.hp_bar).getLayoutParams().width;
+        max_exp = 4;
+        changeExpBarSize();
+        changeRank();
 
         deleteRecord(getString(R.string.music_1));
         insertCombo(getString(R.string.music_1), 2);
@@ -59,6 +66,12 @@ public class MainActivity extends AppCompatActivity {
 
                     // Add Experience, 
                     me.exp += 1;
+                    if (me.exp >= max_exp) {
+                        me.exp -= max_exp;
+                        me.rank += 1;
+                        changeRank();
+                    }
+                    changeExpBarSize();
 
                     int max_combo_last_game = data.getIntExtra(INTENT_KEY_MAX_COMBO, 0);
                     if (max_combo_last_game > max_combo) {
@@ -74,6 +87,12 @@ public class MainActivity extends AppCompatActivity {
             default:
                 break;
         }
+    }
+
+    private void changeRank() {
+
+        TextView mTextView = findViewById(R.id.display_rank_num);
+        mTextView.setText(Integer.toString(me.rank));
     }
 
     private void displayMaxCombo() {
@@ -153,5 +172,19 @@ public class MainActivity extends AppCompatActivity {
         String whereClause = dbHelper.COLUMN_MUSIC_NAME + " = '" + music + "'";
 
         return db.update(dbHelper.TABLE_NAME, values, whereClause, null);
+    }
+
+    /**
+     * Resize the exp bar with the current_exp
+     */
+    private void changeExpBarSize() {
+        // Gets ImageView
+        ImageView layout = findViewById(R.id.hp_bar);
+        // Gets the layout params that will allow you to resize the layout
+        ViewGroup.LayoutParams params = layout.getLayoutParams();
+        // Changes the height and width to the specified *pixels*
+        params.width = max_bar_width * me.exp / max_exp;
+
+        layout.setLayoutParams(params);
     }
 }
