@@ -30,8 +30,17 @@ public class MainActivity extends AppCompatActivity {
     // SharedPreference settings
     SharedPreferences data;
     String prefName = "UserData";
-    String prefRankName = "Rank";
-    String prefExpName = "Experience";
+    public enum PrefKeys {
+        Rank(1),
+        Experience(0),
+        ;
+
+        private final int defaultValue;
+
+        private PrefKeys(int val) {
+            this.defaultValue = val;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Init SharedPref and get value
         data = getSharedPreferences(prefName, MODE_PRIVATE);
-        int rank = data.getInt(prefRankName, 1);
-        int exp = data.getInt(prefExpName, 0);
+        int rank = data.getInt(PrefKeys.Rank.toString(), PrefKeys.Rank.defaultValue);
+        int exp = data.getInt(PrefKeys.Experience.toString(), PrefKeys.Experience.defaultValue);
 
         me.exp = exp;
         me.rank = rank;
@@ -115,8 +124,8 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences dataPref = getSharedPreferences(prefName, MODE_PRIVATE);
         SharedPreferences.Editor editor = dataPref.edit();
 
-        editor.putInt(prefRankName, me.rank);
-        editor.putInt(prefExpName, me.exp);
+        editor.putInt(PrefKeys.Rank.toString(), me.rank);
+        editor.putInt(PrefKeys.Experience.toString(), me.exp);
         editor.commit();
         //        editor.apply();
     }
