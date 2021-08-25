@@ -2,10 +2,11 @@ package io.kokoichi.sample.rhythmgame;
 
 public class Me {
 
-    int exp;
+    int exp, rank;
 
     Me() {
         exp = getExp();
+        rank = 1;
     }
 
     int getExp() {
