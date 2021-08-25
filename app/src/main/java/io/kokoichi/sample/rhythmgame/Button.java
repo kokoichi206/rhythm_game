@@ -12,7 +12,7 @@ public class Button {
 
     Bitmap button;
     int x, y, length =54;
-    int startX = 1700;
+    int startX = 2000;
     int startY = 100;
 
     Button(Resources res) {
