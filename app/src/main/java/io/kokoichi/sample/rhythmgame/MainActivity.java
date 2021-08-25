@@ -37,8 +37,9 @@ public class MainActivity extends AppCompatActivity {
 
         me = new Me();
         max_bar_width = findViewById(R.id.hp_bar).getLayoutParams().width;
-        max_exp = 5;
+        max_exp = 4;
         changeExpBarSize();
+        changeRank();
 
         deleteRecord(getString(R.string.music_1));
         insertCombo(getString(R.string.music_1), 2);
@@ -89,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changeRank() {
+
+        TextView mTextView = findViewById(R.id.display_rank_num);
+        mTextView.setText(Integer.toString(me.rank));
     }
 
     private void displayMaxCombo() {
@@ -179,12 +183,8 @@ public class MainActivity extends AppCompatActivity {
         // Gets the layout params that will allow you to resize the layout
         ViewGroup.LayoutParams params = layout.getLayoutParams();
         // Changes the height and width to the specified *pixels*
-        Log.d("hoge", String.valueOf(params.width));
-        Log.d("hoge", String.valueOf(params.height));
-
         params.width = max_bar_width * me.exp / max_exp;
-        Log.d("hoge", String.valueOf(params.width));
-        Log.d("hoge", String.valueOf(params.height));
+
         layout.setLayoutParams(params);
     }
 }
