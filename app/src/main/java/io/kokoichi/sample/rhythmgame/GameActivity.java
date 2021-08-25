@@ -2,11 +2,8 @@ package io.kokoichi.sample.rhythmgame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 
 public class GameActivity extends AppCompatActivity {
 
