@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -26,6 +27,12 @@ public class MainActivity extends AppCompatActivity {
     public Me me;
     int max_bar_width, max_exp;
 
+    // SharedPreference settings
+    SharedPreferences data;
+    String prefName = "UserData";
+    String prefRankName = "Rank";
+    String prefExpName = "Experience";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,11 +42,10 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(new Intent(MainActivity.this, GameActivity.class), REQUEST_CODE_1);
         });
 
+        // Init the Me class (Manage user data)
         me = new Me();
         max_bar_width = findViewById(R.id.hp_bar).getLayoutParams().width;
         max_exp = 4;
-        changeExpBarSize();
-        changeRank();
 
         deleteRecord(getString(R.string.music_1));
         insertCombo(getString(R.string.music_1), 2);
@@ -51,6 +57,18 @@ public class MainActivity extends AppCompatActivity {
         String message = String.format(getString(R.string.display_high_score), max_combo);
         TextView combo_text = findViewById(R.id.display_high_score);
         combo_text.setText(message);
+
+        // Init SharedPref and get value
+        SharedPreferences data = getSharedPreferences(prefName, MODE_PRIVATE);
+        int rank = data.getInt(prefRankName, 1);
+        int exp = data.getInt(prefExpName, 0);
+
+        me.exp = exp;
+        me.rank = rank;
+
+        // Update the display
+        changeExpBarSize();
+        changeRank();
     }
 
     @Override
@@ -104,6 +122,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy () {
+
+        // Save user exp and lv
+        SharedPreferences data = getSharedPreferences(prefName, MODE_PRIVATE);
+        SharedPreferences.Editor editor = data.edit();
+
+        editor.putInt(prefRankName, me.rank);
+        editor.putInt(prefExpName, me.exp);
+
+        editor.commit();
+//        editor.apply();
+
         dbHelper.close();
         super.onDestroy();
     }
