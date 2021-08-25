@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
 
     private int max_combo;
 
+    public Me me;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.play).setOnClickListener((view) -> {
             startActivityForResult(new Intent(MainActivity.this, GameActivity.class), REQUEST_CODE_1);
         });
+
+        me = new Me();
 
         deleteRecord(getString(R.string.music_1));
         insertCombo(getString(R.string.music_1), 2);
