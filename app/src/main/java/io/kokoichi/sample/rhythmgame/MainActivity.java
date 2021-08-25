@@ -4,10 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,6 +24,15 @@ public class MainActivity extends AppCompatActivity {
 
     private int max_combo;
 
+    public Me me;
+    int max_bar_width, max_exp;
+
+    // SharedPreference settings
+    SharedPreferences data;
+    String prefName = "UserData";
+    String prefRankName = "Rank";
+    String prefExpName = "Experience";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +41,11 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.play).setOnClickListener((view) -> {
             startActivityForResult(new Intent(MainActivity.this, GameActivity.class), REQUEST_CODE_1);
         });
+
+        // Init the Me class (Manage user data)
+        me = new Me();
+        max_bar_width = findViewById(R.id.hp_bar).getLayoutParams().width;
+        max_exp = 4;
 
         deleteRecord(getString(R.string.music_1));
         insertCombo(getString(R.string.music_1), 2);
@@ -40,6 +57,18 @@ public class MainActivity extends AppCompatActivity {
         String message = String.format(getString(R.string.display_high_score), max_combo);
         TextView combo_text = findViewById(R.id.display_high_score);
         combo_text.setText(message);
+
+        // Init SharedPref and get value
+        SharedPreferences data = getSharedPreferences(prefName, MODE_PRIVATE);
+        int rank = data.getInt(prefRankName, 1);
+        int exp = data.getInt(prefExpName, 0);
+
+        me.exp = exp;
+        me.rank = rank;
+
+        // Update the display
+        changeExpBarSize();
+        changeRank();
     }
 
     @Override
@@ -49,7 +78,19 @@ public class MainActivity extends AppCompatActivity {
             // Return from gameActivity
             case (REQUEST_CODE_1):
                 Log.d(TAG, "Return Home from Game Play Activity");
+
+                // Case: Clear the game
                 if (resultCode == RESULT_OK) {
+
+                    // Add Experience, 
+                    me.exp += 1;
+                    if (me.exp >= max_exp) {
+                        me.exp -= max_exp;
+                        me.rank += 1;
+                        changeRank();
+                    }
+                    changeExpBarSize();
+
                     int max_combo_last_game = data.getIntExtra(INTENT_KEY_MAX_COMBO, 0);
                     if (max_combo_last_game > max_combo) {
                         Log.d(TAG, "The max_combo is updated");
@@ -66,6 +107,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void changeRank() {
+
+        TextView mTextView = findViewById(R.id.display_rank_num);
+        mTextView.setText(Integer.toString(me.rank));
+    }
+
     private void displayMaxCombo() {
         // Display the max combo
         String message = String.format(getString(R.string.display_high_score), max_combo);
@@ -75,6 +122,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy () {
+
+        // Save user exp and lv
+        SharedPreferences data = getSharedPreferences(prefName, MODE_PRIVATE);
+        SharedPreferences.Editor editor = data.edit();
+
+        editor.putInt(prefRankName, me.rank);
+        editor.putInt(prefExpName, me.exp);
+
+        editor.commit();
+//        editor.apply();
+
         dbHelper.close();
         super.onDestroy();
     }
@@ -143,5 +201,19 @@ public class MainActivity extends AppCompatActivity {
         String whereClause = dbHelper.COLUMN_MUSIC_NAME + " = '" + music + "'";
 
         return db.update(dbHelper.TABLE_NAME, values, whereClause, null);
+    }
+
+    /**
+     * Resize the exp bar with the current_exp
+     */
+    private void changeExpBarSize() {
+        // Gets ImageView
+        ImageView layout = findViewById(R.id.hp_bar);
+        // Gets the layout params that will allow you to resize the layout
+        ViewGroup.LayoutParams params = layout.getLayoutParams();
+        // Changes the height and width to the specified *pixels*
+        params.width = max_bar_width * me.exp / max_exp;
+
+        layout.setLayoutParams(params);
     }
 }
