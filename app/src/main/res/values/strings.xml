@@ -7,4 +7,7 @@
     <string name="pause_dialog_message">Do you want to quit this play?</string>
     <string name="pause_dialog_continue">Continue</string>
     <string name="pause_dialog_quit">Quit</string>
+    <string name="dead_dialog_ok">OK</string>
+    <string name="dead_dialog_title">GAME OVER</string>
+    <string name="dead_dialog_message">Back to Home</string>
 </resources>

@@ -40,9 +40,7 @@ public class GameActivity extends AppCompatActivity {
 
         // Do something before killing this GameActivity
         if (MyMediaPlayer.player != null) {
-            if (MyMediaPlayer.player.isPlaying()) {
-                MyMediaPlayer.player.release();
-            }
+            MyMediaPlayer.player.release();
         }
     }
 }

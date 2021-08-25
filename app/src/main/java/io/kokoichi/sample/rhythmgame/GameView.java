@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -50,6 +51,7 @@ public class GameView extends SurfaceView implements Runnable {
     private ArrayList<Notes> notesList;
     private Position[] positions;
     private Button button;
+    private HpBar hpBar;
 
     public MyMediaPlayer myPlayer;
     private double[] dropTiming;
@@ -63,6 +65,10 @@ public class GameView extends SurfaceView implements Runnable {
     private long loopStartedAt;
     private int notesIndex;
     private double nextNotesTiming;
+
+    private final Handler handler;
+    AlertDialog dialog;
+    private AlertDialog.Builder builder;
 
     private class Info {
         int age;            // the unit is loop count
@@ -158,8 +164,15 @@ public class GameView extends SurfaceView implements Runnable {
             dropTiming[i] = dropTiming[i - 1] + dropTiming[i] * one_bar;
         }
 
+        // HP Bar init
+        hpBar = new HpBar(getResources());
+        // FIXME: Who should have this info(max_hp)?
+        hpBar.max_hp = 3;
+        hpBar.current_hp = hpBar.max_hp;
+
         button = new Button(getResources());
 
+        handler = new Handler();
     }
 
     @Override
@@ -220,10 +233,25 @@ public class GameView extends SurfaceView implements Runnable {
             notes.age += ONE_LOOP_TIME;
             notes.y += notes.yLimit * ONE_LOOP_TIME / notes.lifeTimeMilliSec;
 
-            if (notes.age > notes.lifeTimeMilliSec + notes.OFFSET_DEAD) {
-                maxCombo = (combo > maxCombo) ? combo : maxCombo;
-                combo = 0;
+            if (notes.isAlive) {
+                if (notes.age > notes.lifeTimeMilliSec + notes.OFFSET_DEAD) {
+                    maxCombo = (combo > maxCombo) ? combo : maxCombo;
+                    combo = 0;
+
+                    hpBar.current_hp -= 1;
+                    // Check the current HP > 0 <=> Is still alive ?
+                    // MAYBE: Separate "alive check" and "update func"
+                    if (hpBar.current_hp > 0) {
+                        hpBar.update();
+                    } else {
+                        gameOverDialog();
+                        isPlaying = false;
+                    }
+
+                    notes.isAlive = false;
+                }
             }
+
             if (notes.age > (notes.lifeTimeMilliSec + notes.OFFSET)) {
                 trashNotes.add(notes);
             }
@@ -272,6 +300,10 @@ public class GameView extends SurfaceView implements Runnable {
 
         // draw Button
         canvas.drawBitmap(button.button, button.startX, button.startY, paint);
+
+        // draw HP Bar
+        canvas.drawBitmap(hpBar.max_hp_bar, hpBar.x, hpBar.y, paint);
+        canvas.drawBitmap(hpBar.hp_bar, hpBar.x, hpBar.y, paint);
 
         getHolder().unlockCanvasAndPost(canvas);
         return;
@@ -423,8 +455,7 @@ public class GameView extends SurfaceView implements Runnable {
         //
         // Make a dialog to check whether you really wanna go back home
         //
-        // 1. Instantiate a builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder = new AlertDialog.Builder(activity);
 
         // 2. Set the dialog characteristics
         builder.setMessage(R.string.pause_dialog_message)
@@ -453,7 +484,7 @@ public class GameView extends SurfaceView implements Runnable {
         });
 
         // 3. Make a dialog
-        AlertDialog dialog = builder.create();
+        dialog = builder.create();
 
         dialog.show();
     }
@@ -465,4 +496,46 @@ public class GameView extends SurfaceView implements Runnable {
         intent.putExtra(MainActivity.INTENT_KEY_MAX_COMBO, getMaxCombo());
         activity.finish();
     }
+
+    private void gameOverDialog() {
+
+
+        // Release music
+        if (MyMediaPlayer.player != null) {
+            if (MyMediaPlayer.player.isPlaying()) {
+                MyMediaPlayer.player.pause();
+            }
+        }
+
+        //
+        // Make a dialog to check whether you really wanna go back home
+        //
+        // 1. Instantiate a builder
+        builder = new AlertDialog.Builder(activity);
+
+        // 2. Set the dialog characteristics
+        builder.setMessage(R.string.dead_dialog_message)
+                .setTitle(R.string.dead_dialog_title);
+        // OK button
+        builder.setPositiveButton(R.string.dead_dialog_ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                dialog.dismiss();
+                activity.finish();
+
+            }
+        });
+
+        showDialog(builder);
+    }
+
+    void showDialog(AlertDialog.Builder builder ){
+        handler.post(() -> {
+
+            dialog = builder.create();
+            dialog.show();
+
+        });
+    }
+
 }
