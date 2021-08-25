@@ -25,11 +25,13 @@ public class GameView extends SurfaceView implements Runnable {
     private final int CANVAS_TEXT_SIZE = 128;
     private final int CANVAS_TEXT_SIZE_SMALL = 84;
     private static final int NEW_NOTES_START_Y = 128;
+
     protected enum NotesTimings {
         PERFECT,
         GREAT,
         GOOD;
     }
+
     private static final int DISTANCE_PERFECT = 1500;
     private static final int DISTANCE_GREAT = 2000;
     private static final int DISTANCE_GOOD = 3000;
@@ -167,7 +169,7 @@ public class GameView extends SurfaceView implements Runnable {
         // HP Bar init
         hpBar = new HpBar(getResources());
         // FIXME: Who should have this info(max_hp)?
-        hpBar.max_hp = 3;
+        hpBar.max_hp = 310;
         hpBar.current_hp = hpBar.max_hp;
 
         button = new Button(getResources());
@@ -303,7 +305,7 @@ public class GameView extends SurfaceView implements Runnable {
 
         // draw HP Bar
         canvas.drawBitmap(hpBar.max_hp_bar, hpBar.x, hpBar.y, paint);
-        canvas.drawBitmap(hpBar.hp_bar, hpBar.x, hpBar.y, paint);
+        canvas.drawBitmap(hpBar.hp_bar, hpBar.x + hpBar.edge, hpBar.y + hpBar.edge, paint);
 
         getHolder().unlockCanvasAndPost(canvas);
         return;
@@ -529,7 +531,7 @@ public class GameView extends SurfaceView implements Runnable {
         showDialog(builder);
     }
 
-    void showDialog(AlertDialog.Builder builder ){
+    void showDialog(AlertDialog.Builder builder) {
         handler.post(() -> {
 
             dialog = builder.create();
