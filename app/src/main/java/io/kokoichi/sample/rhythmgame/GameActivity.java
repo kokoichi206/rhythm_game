@@ -2,8 +2,11 @@ package io.kokoichi.sample.rhythmgame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -40,9 +43,7 @@ public class GameActivity extends AppCompatActivity {
 
         // Do something before killing this GameActivity
         if (MyMediaPlayer.player != null) {
-            if (MyMediaPlayer.player.isPlaying()) {
-                MyMediaPlayer.player.release();
-            }
+            MyMediaPlayer.player.release();
         }
     }
 }
