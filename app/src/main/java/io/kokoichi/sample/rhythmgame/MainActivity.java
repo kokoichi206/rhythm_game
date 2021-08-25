@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
 
     private int max_combo;
 
+    public Me me;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.play).setOnClickListener((view) -> {
             startActivityForResult(new Intent(MainActivity.this, GameActivity.class), REQUEST_CODE_1);
         });
+
+        me = new Me();
 
         deleteRecord(getString(R.string.music_1));
         insertCombo(getString(R.string.music_1), 2);
@@ -49,7 +53,13 @@ public class MainActivity extends AppCompatActivity {
             // Return from gameActivity
             case (REQUEST_CODE_1):
                 Log.d(TAG, "Return Home from Game Play Activity");
+
+                // Case: Clear the game
                 if (resultCode == RESULT_OK) {
+
+                    // Add Experience, 
+                    me.exp += 1;
+
                     int max_combo_last_game = data.getIntExtra(INTENT_KEY_MAX_COMBO, 0);
                     if (max_combo_last_game > max_combo) {
                         Log.d(TAG, "The max_combo is updated");
