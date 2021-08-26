@@ -1,6 +1,7 @@
 package io.kokoichi.sample.rhythmgame;
 
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.test.rule.ActivityTestRule;
 
@@ -9,6 +10,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -59,7 +61,28 @@ public class MainActivityTest {
             assertNotNull(view);
         }
     }
-    
+
+//    @UiThreadTest
+    @Test
+    public void changeRank() {
+
+        // Change rank to 255
+        mActivity.me.rank = 255;
+
+        mActivity.runOnUiThread(
+                new Runnable() {
+                @Override
+                public void run() {
+                    mActivity.changeRank();
+                }
+            }
+        );
+
+        // Compare with the actual displayed number
+        TextView view = mActivity.findViewById(R.id.display_rank_num);
+        int displayedRank = Integer.parseInt((String) view.getText());
+        assertEquals(255, displayedRank);
+    }
 
     @Test
     public void getHighCombo() {
