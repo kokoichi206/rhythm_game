@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static android.content.DialogInterface.BUTTON_POSITIVE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -170,6 +171,33 @@ public class GameViewTest {
         gameView.returnHomeCheck();
         assertTrue(gameView.dialog.isShowing());
 
+    }
+
+    /**
+     * CAUTION:
+     * This gameOver dialog does not (cannot) run on UI Thread,
+     * so there should not be a UiThreadTest annotation
+     */
+    @Test
+    public void gameOverDialog() {
+
+        // Check the existence of a dialog
+        gameView.gameOverDialog();
+        try {
+            Thread.sleep(1300); //3000ミリ秒Sleepする
+        } catch (InterruptedException e) {
+        }
+        assertNotNull(gameView.dialog);
+        assertTrue(gameView.dialog.isShowing());
+
+        // Check the button message
+        String expectedButtonMsg = gameView.getResources().getString(R.string.dead_dialog_ok);
+        assertEquals(expectedButtonMsg, gameView.dialog.getButton(BUTTON_POSITIVE).getText().toString());
+
+        // TODO:
+        // How to check the title and message ?
+
+        gameView.dialog.dismiss();
     }
 
     @After

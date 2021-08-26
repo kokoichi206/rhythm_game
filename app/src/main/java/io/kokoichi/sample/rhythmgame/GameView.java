@@ -170,7 +170,7 @@ public class GameView extends SurfaceView implements Runnable {
         // HP Bar init
         hpBar = new HpBar(getResources());
         // FIXME: Who should have this info(max_hp)?
-        hpBar.max_hp = 310;
+        hpBar.max_hp = 10;
         hpBar.current_hp = hpBar.max_hp;
 
         button = new Button(getResources());
@@ -503,8 +503,7 @@ public class GameView extends SurfaceView implements Runnable {
         activity.finish();
     }
 
-    private void gameOverDialog() {
-
+    protected void gameOverDialog() {
 
         // Release music
         if (MyMediaPlayer.player != null) {
