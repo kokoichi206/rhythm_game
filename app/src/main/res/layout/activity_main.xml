@@ -38,7 +38,7 @@
         android:textSize="@dimen/text_size_sp_small" />
 
     <ImageView
-        android:id="@+id/max_hp_bar"
+        android:id="@+id/max_exp_bar"
         android:layout_width="150dp"
         android:layout_height="30dp"
         android:layout_alignParentStart="true"
@@ -48,7 +48,7 @@
         android:src="@drawable/max_exp_bar" />
 
     <ImageView
-        android:id="@+id/hp_bar"
+        android:id="@+id/exp_bar"
         android:layout_width="144dp"
         android:layout_height="24dp"
         android:layout_alignParentStart="true"

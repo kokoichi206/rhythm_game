@@ -53,11 +53,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Init the Me class (Manage user data)
         me = new Me();
-        max_bar_width = findViewById(R.id.hp_bar).getLayoutParams().width;
+        max_bar_width = findViewById(R.id.exp_bar).getLayoutParams().width;
         max_exp = 4;
 
         deleteRecord(getString(R.string.music_1));
-        insertCombo(getString(R.string.music_1), 2);
+        insertCombo(getString(R.string.music_1), 0);
 
         // Get the max combo
         max_combo = getHighCombo();
@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
      */
     protected void changeExpBarSize() {
         // Gets ImageView
-        ImageView layout = findViewById(R.id.hp_bar);
+        ImageView layout = findViewById(R.id.exp_bar);
         // Gets the layout params that will allow you to resize the layout
         ViewGroup.LayoutParams params = layout.getLayoutParams();
         // Changes the height and width to the specified *pixels*
