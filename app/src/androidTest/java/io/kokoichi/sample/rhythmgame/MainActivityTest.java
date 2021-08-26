@@ -1,6 +1,8 @@
 package io.kokoichi.sample.rhythmgame;
 
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.rule.ActivityTestRule;
@@ -62,26 +64,33 @@ public class MainActivityTest {
         }
     }
 
+    @Test
+    public void testInit() {
+
+        assertNotNull(mActivity.me);
+
+    }
+
 //    @UiThreadTest
     @Test
     public void changeRank() {
-
-        // Change rank to 255
-        mActivity.me.rank = 255;
 
         mActivity.runOnUiThread(
                 new Runnable() {
                 @Override
                 public void run() {
+
+                    // Change rank to 255
+                    mActivity.me.rank = 255;
                     mActivity.changeRank();
+
+                    // Compare with the actual displayed number
+                    TextView view = mActivity.findViewById(R.id.display_rank_num);
+                    int displayedRank = Integer.parseInt((String) view.getText());
+                    assertEquals(255, displayedRank);
                 }
             }
         );
-
-        // Compare with the actual displayed number
-        TextView view = mActivity.findViewById(R.id.display_rank_num);
-        int displayedRank = Integer.parseInt((String) view.getText());
-        assertEquals(255, displayedRank);
     }
 
     @Test
@@ -100,6 +109,52 @@ public class MainActivityTest {
             mActivity.updateRecord(mActivity.getString(R.string.music_1), combo);
             assertTrue(combo == mActivity.getHighCombo());
         }
+    }
+
+    @Test
+    public void deleteRecord() {
+
+        assertTrue(mActivity.deleteRecord(mActivity.getString(R.string.music_1)));
+
+        int noCombo = mActivity.getHighCombo();
+        // -1 is the expected value
+        // Maybe this is not good implement
+        assertEquals(-1, noCombo);
+    }
+
+    @Test
+    public void changeExpBarSize() {
+
+        int[] test_exp = {0, mActivity.max_exp};
+
+        ImageView layout = mActivity.findViewById(R.id.max_exp_bar);
+        ViewGroup.LayoutParams params = layout.getLayoutParams();
+        int max_width = params.width;
+
+        int edge = 6;
+        int actual_max_width = max_width - edge;
+
+        mActivity.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+
+                        for (int exp: test_exp) {
+
+                            mActivity.me.exp = exp;
+                            mActivity.changeExpBarSize();
+
+                            ImageView layout = mActivity.findViewById(R.id.exp_bar);
+                            ViewGroup.LayoutParams params = layout.getLayoutParams();
+                            int width = params.width;
+
+                            assertTrue(width < actual_max_width);
+//                            assertTrue(Math.abs((double) (width / actual_max_width) - (double) (mActivity.me.exp / mActivity.max_exp)) < 0.1);
+
+                        }
+                    }
+                }
+        );
     }
 
     @After
