@@ -436,8 +436,8 @@ public class GameView extends SurfaceView implements Runnable {
     protected boolean isStopButtonTapped(float touchedX, float touchedY) {
         // How roughly the button can be clicked
         double RATIO = 2.5;
-        return (((touchedX > button.x - button.length * (RATIO - 1)) && (touchedX < button.x + button.length * RATIO)) &&
-                ((touchedY > button.y - button.length * (RATIO - 1)) && (touchedY < button.y + button.length * RATIO)));
+        return (((touchedX > button.startX - button.length * (RATIO - 1)) && (touchedX < button.startX + button.length * RATIO)) &&
+                ((touchedY > button.startY - button.length * (RATIO - 1)) && (touchedY < button.startY + button.length * RATIO)));
     }
 
     public int getMaxCombo() {

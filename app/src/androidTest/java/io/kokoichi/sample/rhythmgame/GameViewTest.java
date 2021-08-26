@@ -8,7 +8,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class GameViewTest {
 
@@ -18,6 +20,13 @@ public class GameViewTest {
     private GameActivity mActivityGame = null;
 
     private GameView gameView;
+    class RelativePosition {
+        int rel_x, rel_y;
+        RelativePosition(int x, int y) {
+            rel_x = x;
+            rel_y = y;
+        }
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -64,13 +73,7 @@ public class GameViewTest {
     @Test
     public void getCircleIndex() {
 
-        class RelativePosition {
-            int rel_x, rel_y;
-            RelativePosition(int x, int y) {
-                rel_x = x;
-                rel_y = y;
-            }
-        }
+
 
         for (int i = 0; i < gameView.circles.length; i++) {
 
@@ -106,6 +109,7 @@ public class GameViewTest {
                 new RelativePosition(400, 20),
                 new RelativePosition(-4, 5),
                 new RelativePosition(4, -50),
+                new RelativePosition(15000, 200000),    // large Num
         };
         for (RelativePosition relativePosition: verifyRelativePositions) {
 
@@ -113,6 +117,47 @@ public class GameViewTest {
             float y = startY + relativePosition.rel_y;
             int circleIndex = gameView.getCircleIndex(x, y);
             assertEquals("x position: " + relativePosition.rel_x, -1, circleIndex);
+        }
+    }
+
+    @Test
+    public void isStopButtonTapped() {
+
+        int startX = gameView.button.startX;
+        int startY = gameView.button.startY;
+        int width = gameView.button.length;
+        int height = gameView.button.length;
+
+        // Assertions expected to be true
+        RelativePosition[] expectedTruePositions = {
+                new RelativePosition(0, 0),
+                new RelativePosition(width / 2, height / 2),
+                new RelativePosition(width, height),
+                new RelativePosition(width, height),
+        };
+        for (RelativePosition relativePosition: expectedTruePositions) {
+
+            float x = startX + relativePosition.rel_x;
+            float y = startY + relativePosition.rel_y;
+            int circleIndex = gameView.getCircleIndex(x, y);
+            assertTrue(gameView.isStopButtonTapped(x, y));
+        }
+
+        // Assertions expected to be false
+        int topX = 0;
+        int leftY = 0;
+        RelativePosition[] expectedFalsePositions = {
+                new RelativePosition(-100, startY),
+                new RelativePosition(startX, -100),
+                new RelativePosition(20, 20),
+                new RelativePosition(15000, 200000),    // large Num
+        };
+        for (RelativePosition relativePosition: expectedFalsePositions) {
+
+            float x = topX + relativePosition.rel_x;
+            float y = leftY + relativePosition.rel_y;
+            int circleIndex = gameView.getCircleIndex(x, y);
+            assertFalse(gameView.isStopButtonTapped(x, y));
         }
     }
 
