@@ -41,19 +41,20 @@ public class GameView extends SurfaceView implements Runnable {
 
     public static float screenRatioX, screenRatioY;
 
-    private Thread thread;
+    protected Thread thread;
     private boolean isPlaying;
-    private Paint paint, sPaint;
+    protected Paint paint;
+    protected Paint sPaint;
     private int screenX, screenY;
-    private GameActivity activity;
+    protected GameActivity activity;
     private Random random;
 
-    private Background background;
-    private Circle[] circles;
-    private ArrayList<Notes> notesList;
-    private Position[] positions;
-    private Button button;
-    private HpBar hpBar;
+    protected Background background;
+    protected Circle[] circles;
+    protected ArrayList<Notes> notesList;
+    protected Position[] positions;
+    protected Button button;
+    protected HpBar hpBar;
 
     public MyMediaPlayer myPlayer;
     private double[] dropTiming;
@@ -62,7 +63,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     private int combo = 0;
     private int maxCombo = 0;
-    private Info info;      // information like "GOOD","PERFECT"
+    protected Info info;      // information like "GOOD","PERFECT"
 
     private long loopStartedAt;
     private int notesIndex;
