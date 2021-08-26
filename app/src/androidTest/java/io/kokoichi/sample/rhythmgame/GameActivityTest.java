@@ -38,5 +38,9 @@ public class GameActivityTest {
 
     @After
     public void tearDown() throws Exception {
+
+        mActivityMain = null;
+        mActivityGame = null;
+        
     }
 }
