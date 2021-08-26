@@ -1,7 +1,5 @@
 package io.kokoichi.sample.rhythmgame;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +10,8 @@ import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,11 +53,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Init the Me class (Manage user data)
         me = new Me();
-        max_bar_width = findViewById(R.id.hp_bar).getLayoutParams().width;
+        max_bar_width = findViewById(R.id.exp_bar).getLayoutParams().width;
         max_exp = 4;
 
         deleteRecord(getString(R.string.music_1));
-        insertCombo(getString(R.string.music_1), 2);
+        insertCombo(getString(R.string.music_1), 0);
 
         // Get the max combo
         max_combo = getHighCombo();
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         //        editor.apply();
     }
 
-    private void changeRank() {
+    protected void changeRank() {
 
         TextView mTextView = findViewById(R.id.display_rank_num);
         mTextView.setText(Integer.toString(me.rank));
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @return
      */
-    private int getHighCombo() {
+    protected int getHighCombo() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         int combo = 0;
         Cursor cursor = null;
@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
      * @param combo
      * @return the number of lines (if not found, return -1)
      */
-    private long insertCombo(String music, int combo) {
+    protected long insertCombo(String music, int combo) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -196,14 +196,14 @@ public class MainActivity extends AppCompatActivity {
         return db.insert(dbHelper.TABLE_NAME, null, values);
     }
 
-    private boolean deleteRecord(String music) {
+    protected boolean deleteRecord(String music) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // True if a record existed and was successfully deleted.
         return db.delete(dbHelper.TABLE_NAME, dbHelper.COLUMN_MUSIC_NAME + " = '" + music + "'", null) == 1;
     }
 
-    private long updateRecord(String music, int combo) {
+    protected long updateRecord(String music, int combo) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -218,9 +218,9 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Resize the exp bar with the current_exp
      */
-    private void changeExpBarSize() {
+    protected void changeExpBarSize() {
         // Gets ImageView
-        ImageView layout = findViewById(R.id.hp_bar);
+        ImageView layout = findViewById(R.id.exp_bar);
         // Gets the layout params that will allow you to resize the layout
         ViewGroup.LayoutParams params = layout.getLayoutParams();
         // Changes the height and width to the specified *pixels*
