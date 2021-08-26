@@ -169,6 +169,7 @@ public class GameViewTest {
     public void returnHomeCheck() {
 
         gameView.returnHomeCheck();
+        assertNotNull(gameView.dialog);
         assertTrue(gameView.dialog.isShowing());
 
     }
@@ -181,12 +182,9 @@ public class GameViewTest {
     @Test
     public void gameOverDialog() {
 
-        // Check the existence of a dialog
         gameView.gameOverDialog();
-        try {
-            Thread.sleep(1300); //3000ミリ秒Sleepする
-        } catch (InterruptedException e) {
-        }
+
+        // Check the existence of a dialog
         assertNotNull(gameView.dialog);
         assertTrue(gameView.dialog.isShowing());
 
