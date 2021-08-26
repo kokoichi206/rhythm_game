@@ -411,7 +411,10 @@ public class GameView extends SurfaceView implements Runnable {
         info.message = msg;
     }
 
-    private int getCircleIndex(float touchedX, float touchedY) {
+    //
+    // Index range 0 ~ NOTES_NUM-1
+    //
+    protected int getCircleIndex(float touchedX, float touchedY) {
 
         int index = -1;
         for (int i = 0; i < NOTES_NUM; i++) {

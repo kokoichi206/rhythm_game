@@ -61,6 +61,61 @@ public class GameViewTest {
 
     }
 
+    @Test
+    public void getCircleIndex() {
+
+        class RelativePosition {
+            int rel_x, rel_y;
+            RelativePosition(int x, int y) {
+                rel_x = x;
+                rel_y = y;
+            }
+        }
+
+        for (int i = 0; i < gameView.circles.length; i++) {
+
+            Circle circle = gameView.circles[i];
+            assertNotNull(circle);
+            int startX = circle.x;
+            int startY = circle.y;
+            int width = circle.length;
+            int height = circle.length;
+
+            int edge = 1;
+
+            RelativePosition[] verifyRelativePositions = {
+                    new RelativePosition(edge, edge),
+                    new RelativePosition(width / 2, height / 2),
+                    new RelativePosition(width - edge, height - edge),
+            };
+
+            for (RelativePosition relativePosition: verifyRelativePositions) {
+
+                float x = startX + relativePosition.rel_x;
+                float y = startY + relativePosition.rel_y;
+                int circleIndex = gameView.getCircleIndex(x, y);
+                assertEquals("x position: " + relativePosition.rel_x, i, circleIndex);
+            }
+        }
+
+        // Out of range test: expected -1 as a return value
+        int startX = 0;
+        int startY = 0;
+        RelativePosition[] verifyRelativePositions = {
+                new RelativePosition(20, 20),
+                new RelativePosition(400, 20),
+                new RelativePosition(-4, 5),
+                new RelativePosition(4, -50),
+        };
+        for (RelativePosition relativePosition: verifyRelativePositions) {
+
+            float x = startX + relativePosition.rel_x;
+            float y = startY + relativePosition.rel_y;
+            int circleIndex = gameView.getCircleIndex(x, y);
+            assertEquals("x position: " + relativePosition.rel_x, -1, circleIndex);
+        }
+    }
+
     @After
     public void tearDown() throws Exception {
 
