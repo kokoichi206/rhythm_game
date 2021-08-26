@@ -1,5 +1,6 @@
 package io.kokoichi.sample.rhythmgame;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.rule.ActivityTestRule;
 
 import org.junit.After;
@@ -20,8 +21,10 @@ public class GameViewTest {
     private GameActivity mActivityGame = null;
 
     private GameView gameView;
+
     class RelativePosition {
         int rel_x, rel_y;
+
         RelativePosition(int x, int y) {
             rel_x = x;
             rel_y = y;
@@ -55,7 +58,7 @@ public class GameViewTest {
                 gameView.info,
         };
 
-        for (Object object: objectsInGameView) {
+        for (Object object : objectsInGameView) {
             assertNotNull(object);
         }
     }
@@ -72,7 +75,6 @@ public class GameViewTest {
 
     @Test
     public void getCircleIndex() {
-
 
 
         for (int i = 0; i < gameView.circles.length; i++) {
@@ -92,7 +94,7 @@ public class GameViewTest {
                     new RelativePosition(width - edge, height - edge),
             };
 
-            for (RelativePosition relativePosition: verifyRelativePositions) {
+            for (RelativePosition relativePosition : verifyRelativePositions) {
 
                 float x = startX + relativePosition.rel_x;
                 float y = startY + relativePosition.rel_y;
@@ -111,7 +113,7 @@ public class GameViewTest {
                 new RelativePosition(4, -50),
                 new RelativePosition(15000, 200000),    // large Num
         };
-        for (RelativePosition relativePosition: verifyRelativePositions) {
+        for (RelativePosition relativePosition : verifyRelativePositions) {
 
             float x = startX + relativePosition.rel_x;
             float y = startY + relativePosition.rel_y;
@@ -135,7 +137,7 @@ public class GameViewTest {
                 new RelativePosition(width, height),
                 new RelativePosition(width, height),
         };
-        for (RelativePosition relativePosition: expectedTruePositions) {
+        for (RelativePosition relativePosition : expectedTruePositions) {
 
             float x = startX + relativePosition.rel_x;
             float y = startY + relativePosition.rel_y;
@@ -152,13 +154,22 @@ public class GameViewTest {
                 new RelativePosition(20, 20),
                 new RelativePosition(15000, 200000),    // large Num
         };
-        for (RelativePosition relativePosition: expectedFalsePositions) {
+        for (RelativePosition relativePosition : expectedFalsePositions) {
 
             float x = topX + relativePosition.rel_x;
             float y = leftY + relativePosition.rel_y;
             int circleIndex = gameView.getCircleIndex(x, y);
             assertFalse(gameView.isStopButtonTapped(x, y));
         }
+    }
+
+    @Test
+    @UiThreadTest
+    public void returnHomeCheck() {
+
+        gameView.returnHomeCheck();
+        assertTrue(gameView.dialog.isShowing());
+
     }
 
     @After
