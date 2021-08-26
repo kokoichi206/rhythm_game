@@ -41,19 +41,20 @@ public class GameView extends SurfaceView implements Runnable {
 
     public static float screenRatioX, screenRatioY;
 
-    private Thread thread;
+    protected Thread thread;
     private boolean isPlaying;
-    private Paint paint, sPaint;
+    protected Paint paint;
+    protected Paint sPaint;
     private int screenX, screenY;
-    private GameActivity activity;
+    protected GameActivity activity;
     private Random random;
 
-    private Background background;
-    private Circle[] circles;
-    private ArrayList<Notes> notesList;
-    private Position[] positions;
-    private Button button;
-    private HpBar hpBar;
+    protected Background background;
+    protected Circle[] circles;
+    protected ArrayList<Notes> notesList;
+    protected Position[] positions;
+    protected Button button;
+    protected HpBar hpBar;
 
     public MyMediaPlayer myPlayer;
     private double[] dropTiming;
@@ -62,7 +63,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     private int combo = 0;
     private int maxCombo = 0;
-    private Info info;      // information like "GOOD","PERFECT"
+    protected Info info;      // information like "GOOD","PERFECT"
 
     private long loopStartedAt;
     private int notesIndex;
@@ -169,7 +170,7 @@ public class GameView extends SurfaceView implements Runnable {
         // HP Bar init
         hpBar = new HpBar(getResources());
         // FIXME: Who should have this info(max_hp)?
-        hpBar.max_hp = 310;
+        hpBar.max_hp = 10;
         hpBar.current_hp = hpBar.max_hp;
 
         button = new Button(getResources());
@@ -410,7 +411,10 @@ public class GameView extends SurfaceView implements Runnable {
         info.message = msg;
     }
 
-    private int getCircleIndex(float touchedX, float touchedY) {
+    //
+    // Index range 0 ~ NOTES_NUM-1
+    //
+    protected int getCircleIndex(float touchedX, float touchedY) {
 
         int index = -1;
         for (int i = 0; i < NOTES_NUM; i++) {
@@ -432,8 +436,8 @@ public class GameView extends SurfaceView implements Runnable {
     protected boolean isStopButtonTapped(float touchedX, float touchedY) {
         // How roughly the button can be clicked
         double RATIO = 2.5;
-        return (((touchedX > button.x - button.length * (RATIO - 1)) && (touchedX < button.x + button.length * RATIO)) &&
-                ((touchedY > button.y - button.length * (RATIO - 1)) && (touchedY < button.y + button.length * RATIO)));
+        return (((touchedX > button.startX - button.length * (RATIO - 1)) && (touchedX < button.startX + button.length * RATIO)) &&
+                ((touchedY > button.startY - button.length * (RATIO - 1)) && (touchedY < button.startY + button.length * RATIO)));
     }
 
     public int getMaxCombo() {
@@ -499,8 +503,7 @@ public class GameView extends SurfaceView implements Runnable {
         activity.finish();
     }
 
-    private void gameOverDialog() {
-
+    protected void gameOverDialog() {
 
         // Release music
         if (MyMediaPlayer.player != null) {
