@@ -26,7 +26,6 @@ import org.junit.Test;
 public class GameActivityUITest {
 
     @Rule
-//    public ActivityScenario<GameActivity> mActivityGameTestRule = new ActivityScenario.launch(GameActivity.class);
     public ActivityTestRule<GameActivity> mActivityGameTestRule = new ActivityTestRule<>(GameActivity.class);
 
     private GameActivity mActivityGame = null;
