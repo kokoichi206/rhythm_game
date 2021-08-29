@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - issue/51
+    paths-ignore:
+      - docs/**
+      - README.md
+      - LICENSE
+  pull_request:
+    branches:
+      - develop
+    paths-ignore:
+      - docs/**
+      - README.md
+      - LICENSE
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v1
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Run Android Lint
+        run: ./gradlew lintDebug
+      - name: Run Unit Test
+        run: ./gradlew testDebug
+      - name: Build with Gradle
+        run: ./gradlew assembleDebug
+      - name: Upload apk file
+        uses: actions/upload-artifact@v1
+        with:
+          name: apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 5
+
+  # run UI tests
+  test:
+    name: Test
+    runs-on: macos-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2P
+        with:
+          api-level: 29
+          script: ./gradlew connectedCheck
