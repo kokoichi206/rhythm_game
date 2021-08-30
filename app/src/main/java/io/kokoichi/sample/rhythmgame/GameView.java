@@ -548,7 +548,15 @@ public class GameView extends SurfaceView implements Runnable {
     void showDialog(AlertDialog.Builder builder) {
         handler.post(() -> {
 
+            builder.setOnKeyListener((arg0, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    // do NOTHING when the back button is clicked
+                }
+                return true;
+            });
             dialog = builder.create();
+            // make the dialog not cancellable
+            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
 
         });
