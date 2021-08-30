@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
@@ -487,6 +488,13 @@ public class GameView extends SurfaceView implements Runnable {
                 // User cancelled the dialog
                 returnHome();
             }
+        });
+        builder.setOnKeyListener((arg0, keyCode, event) -> {
+
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                // do NOTHING when the back button is clicked
+            }
+            return true;
         });
 
         // 3. Make a dialog
