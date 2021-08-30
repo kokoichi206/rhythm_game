@@ -492,6 +492,9 @@ public class GameView extends SurfaceView implements Runnable {
         // 3. Make a dialog
         dialog = builder.create();
 
+        // make the dialog not cancellable
+        dialog.setCanceledOnTouchOutside(false);
+
         dialog.show();
     }
 
