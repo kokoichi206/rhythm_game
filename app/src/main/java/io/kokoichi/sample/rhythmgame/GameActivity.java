@@ -24,6 +24,7 @@ public class GameActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+
         super.onPause();
 
         // `finish()` method is for the following case.

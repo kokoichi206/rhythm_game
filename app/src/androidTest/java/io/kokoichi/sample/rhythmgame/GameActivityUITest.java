@@ -47,11 +47,11 @@ public class GameActivityUITest {
         Button button = mActivityGame.gameView.button;
         onView(isRoot()).perform(clickXY(button.startX, button.startY));
 
-        // Check if the pause dialog is showing
+        // Check if the pause dialog is displayed
         isDialogDisplayed(R.string.pause_dialog_message);
 
         //
-        // Outside of the dialog
+        // Outside of the dialog test
         //
         // Tap outside the dialog
         onView(isRoot()).perform(clickXY(-100, 100));
@@ -60,7 +60,7 @@ public class GameActivityUITest {
         isDialogDisplayed(R.string.pause_dialog_message);
 
         //
-        // Back button
+        // Back button test
         //
         // Press back button
         pressBack();
@@ -69,7 +69,7 @@ public class GameActivityUITest {
         isDialogDisplayed(R.string.pause_dialog_message);
 
         //
-        // Home button
+        // Home button test
         //  When the home button is clicked, I expect the activity will be destroyed.
         //
         // Press back button
