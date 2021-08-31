@@ -26,7 +26,7 @@ import org.junit.Test;
 
 public class GameActivityUITest {
 
-    public boolean TEST_LOCALLY = true;    // Not ON ACTIONS
+    public boolean TEST_LOCALLY = false;    // Not ON ACTIONS
 
     @Rule
     public ActivityTestRule<GameActivity> mActivityGameTestRule = new ActivityTestRule<>(GameActivity.class);
