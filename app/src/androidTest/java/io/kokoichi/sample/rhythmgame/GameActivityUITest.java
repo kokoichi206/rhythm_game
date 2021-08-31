@@ -1,7 +1,6 @@
 package io.kokoichi.sample.rhythmgame;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
@@ -27,7 +26,7 @@ import org.junit.Test;
 
 public class GameActivityUITest {
 
-    public boolean TEST_LOCALLY = false;    // Not ON ACTIONS
+    public boolean TEST_LOCALLY = true;    // Not ON ACTIONS
 
     @Rule
     public ActivityTestRule<GameActivity> mActivityGameTestRule = new ActivityTestRule<>(GameActivity.class);
@@ -57,15 +56,6 @@ public class GameActivityUITest {
         //
         // Tap outside the dialog
         onView(isRoot()).perform(clickXY(-100, 100));
-
-        // Check if the dialog is STILL displayed
-        isDialogDisplayed(R.string.pause_dialog_message);
-
-        //
-        // Back button test
-        //
-        // Press back button
-        pressBack();
 
         // Check if the dialog is STILL displayed
         isDialogDisplayed(R.string.pause_dialog_message);
@@ -168,12 +158,6 @@ public class GameActivityUITest {
 
         // Tap outside the dialog
         onView(isRoot()).perform(clickXY(-100, 100));
-
-        // Check if the dialog is STILL displayed
-        isDialogDisplayed(R.string.dead_dialog_message);
-
-        // Press back button
-        pressBack();
 
         // Check if the dialog is STILL displayed
         isDialogDisplayed(R.string.dead_dialog_message);
