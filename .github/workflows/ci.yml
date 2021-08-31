@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - issue/51
+      - issue/53
     paths-ignore:
       - docs/**
       - README.md
