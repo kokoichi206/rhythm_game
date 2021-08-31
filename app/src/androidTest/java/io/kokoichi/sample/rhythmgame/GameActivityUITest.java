@@ -72,11 +72,11 @@ public class GameActivityUITest {
         // Home button test
         //  When the home button is clicked, I expect the activity will be destroyed.
         //
-//        // Press back button
-//        pressHome();
-//
-//        // Check if the activity is destroying
-//        assertTrue(mActivityGameTestRule.getActivity().isFinishing());
+        // Press back button
+        pressHome();
+
+        // Check if the activity is destroying
+        assertTrue(mActivityGameTestRule.getActivity().isFinishing());
     }
 
     public void pressHome() {
@@ -170,11 +170,11 @@ public class GameActivityUITest {
         // Check if the dialog is STILL displayed
         isDialogDisplayed(R.string.dead_dialog_message);
 
-//        // Press home button
-//        pressHome();
-//
-//        // Check if the activity is destroying
-//        assertTrue(mActivityGameTestRule.getActivity().isFinishing());
+        // Press home button
+        pressHome();
+
+        // Check if the activity is destroying
+        assertTrue(mActivityGameTestRule.getActivity().isFinishing());
     }
 
     @After
