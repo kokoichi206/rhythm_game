@@ -1,5 +1,7 @@
 package io.kokoichi.sample.rhythmgame;
 
+import static io.kokoichi.sample.rhythmgame.MainActivity.IS_DEBUG;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +28,8 @@ public class GameView extends SurfaceView implements Runnable {
     private final int CANVAS_TEXT_SIZE = 128;
     private final int CANVAS_TEXT_SIZE_SMALL = 84;
     private static final int NEW_NOTES_START_Y = 128;
+    private static final int HP_DEBUG = 150;
+    private static final int HP_RELEASE = 15;
 
     protected enum NotesTimings {
         PERFECT,
@@ -171,8 +175,11 @@ public class GameView extends SurfaceView implements Runnable {
         // HP Bar init
         hpBar = new HpBar(getResources());
         // FIXME: Who should have this info(max_hp)?
-        hpBar.max_hp = 10;
-        hpBar.current_hp = hpBar.max_hp;
+        if (IS_DEBUG) {
+            hpBar.max_hp = HP_DEBUG;
+        } else {
+            hpBar.max_hp = HP_RELEASE;
+        }
 
         button = new Button(getResources());
 
