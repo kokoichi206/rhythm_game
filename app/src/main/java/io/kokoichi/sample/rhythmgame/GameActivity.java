@@ -26,12 +26,17 @@ public class GameActivity extends AppCompatActivity {
     protected void onPause() {
 
         super.onPause();
+        gameView.pause();
+    }
 
+    @Override
+    protected void onStop() {
+
+        super.onStop();
         // `finish()` method is for the following case.
         //      pause button -> home button
         finish();
     }
-
     @Override
     protected void onResume() {
         super.onResume();
