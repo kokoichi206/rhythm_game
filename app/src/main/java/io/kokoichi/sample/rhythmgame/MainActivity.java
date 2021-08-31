@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String INTENT_KEY_MAX_COMBO = "maxCombo";
 
+    public static final Boolean IS_DEBUG = false;
+
     private int max_combo;
 
     public Me me;
@@ -56,8 +58,11 @@ public class MainActivity extends AppCompatActivity {
         max_bar_width = findViewById(R.id.exp_bar).getLayoutParams().width;
         max_exp = 4;
 
-        deleteRecord(getString(R.string.music_1));
-        insertCombo(getString(R.string.music_1), 0);
+        if (IS_DEBUG) {
+            deleteRecord(getString(R.string.music_1));
+            insertCombo(getString(R.string.music_1), 0);
+        }
+
 
         // Get the max combo
         max_combo = getHighCombo();
