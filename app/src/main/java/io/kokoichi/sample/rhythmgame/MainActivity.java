@@ -66,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Get the max combo
         max_combo = getHighCombo();
+        if (max_combo == -1) {
+            max_combo = 0;
+            insertCombo(getString(R.string.music_1), 0);
+        }
 
         // Display the max combo
         String message = String.format(getString(R.string.display_high_score), max_combo);
