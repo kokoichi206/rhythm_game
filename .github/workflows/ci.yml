@@ -2,9 +2,8 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-      - issue/53
+    branches-ignore:
+      - 'issue/*'
     paths-ignore:
       - docs/**
       - README.md
